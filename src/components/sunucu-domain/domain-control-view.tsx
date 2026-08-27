@@ -3,7 +3,7 @@
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { AlertTriangle, Loader2, RefreshCw, Search, ServerCog } from "lucide-react";
+import { AlertTriangle, Loader2, Radar, RefreshCw, Search, ServerCog } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -30,7 +30,9 @@ import {
   createServerDomainOperation,
   getServerDomainOperation,
   listServerSites,
+  locateDomain,
   type DiscoveredSite,
+  type DomainLocation,
   type OperationView,
 } from "@/actions/server-domains";
 import { SERVER_DOMAIN_OP_TYPE_OPTIONS } from "@/lib/validation/server-domain";
@@ -108,6 +110,8 @@ export function DomainControlView({
   const [isCreating, startCreate] = useTransition();
   const [isScanning, startScan] = useTransition();
   const [isOpening, startOpen] = useTransition();
+  const [isLocating, startLocate] = useTransition();
+  const [locations, setLocations] = useState<DomainLocation[] | null>(null);
 
   const server = servers.find((item) => item.id === serverId) ?? null;
   const blockers = useMemo(() => describeBlockers(server), [server]);
@@ -122,6 +126,35 @@ export function DomainControlView({
 
   function set<K extends keyof typeof EMPTY_FORM>(key: K, value: (typeof EMPTY_FORM)[K]) {
     setForm((prev) => ({ ...prev, [key]: value }));
+  }
+
+  /**
+   * Alan adının hangi kayıtlı sunucuda tanımlı olduğunu bulur.
+   * Tek sunucuda bulunursa o sunucu doğrudan seçilir; kullanıcının hangi sitenin
+   * hangi makinede olduğunu bilmesi gerekmez.
+   */
+  function onLocate() {
+    const domain = form.old_domain.trim();
+    if (!domain) return;
+    setLocations(null);
+    startLocate(async () => {
+      const res = await locateDomain(domain);
+      if (!res.success) {
+        toast.error(res.error);
+        return;
+      }
+      setLocations(res.data);
+      const matches = res.data.filter((row) => row.files.length > 0);
+      if (matches.length === 1) {
+        setServerId(matches[0].serverId);
+        setSites(null);
+        toast.success(`${domain} → ${matches[0].serverName} sunucusunda bulundu ve seçildi.`);
+      } else if (matches.length > 1) {
+        toast.warning(`${domain} birden fazla sunucuda tanımlı. Aşağıdan seçin.`);
+      } else {
+        toast.error(`${domain} taranan sunucuların hiçbirinde bulunamadı.`);
+      }
+    });
   }
 
   function onScan() {
@@ -300,19 +333,78 @@ export function DomainControlView({
                   <Button
                     type="button"
                     variant="outline"
+                    onClick={onLocate}
+                    disabled={isLocating || !form.old_domain.trim()}
+                    title="Bu alan adının hangi kayıtlı sunucuda tanımlı olduğunu bul"
+                  >
+                    {isLocating ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Radar className="h-4 w-4" />
+                    )}
+                    Sunucusunu bul
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
                     onClick={onScan}
                     disabled={isScanning || !serverId || blockers.length > 0}
-                    title="Sunucudaki site tanımlarını listele"
+                    title="Seçili sunucudaki site tanımlarını listele"
                   >
                     {isScanning ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
                     ) : (
                       <Search className="h-4 w-4" />
                     )}
-                    Sunucudan getir
+                    Siteleri listele
                   </Button>
                 </div>
               </Field>
+            )}
+
+            {locations && form.type === "change" && (
+              <div className="space-y-1.5 rounded-lg border p-2">
+                <p className="px-1 text-xs font-semibold text-muted-foreground">
+                  Alan adı araması ({locations.filter((row) => row.files.length > 0).length}/
+                  {locations.length} sunucuda bulundu)
+                </p>
+                {locations.map((row) => {
+                  const found = row.files.length > 0;
+                  return (
+                    <button
+                      key={row.serverId}
+                      type="button"
+                      disabled={!found}
+                      onClick={() => {
+                        setServerId(row.serverId);
+                        setSites(null);
+                      }}
+                      className={cn(
+                        "flex w-full items-start justify-between gap-3 rounded-md px-2 py-1.5 text-left",
+                        found ? "hover:bg-accent" : "opacity-60",
+                        row.serverId === serverId && found && "bg-accent"
+                      )}
+                    >
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-medium">
+                          {row.serverName}
+                          {row.address ? ` · ${row.address}` : ""}
+                        </p>
+                        <p className="truncate text-xs text-muted-foreground">
+                          {row.error
+                            ? row.error
+                            : found
+                              ? row.files.join(", ")
+                              : "Bu sunucuda tanımlı değil."}
+                        </p>
+                      </div>
+                      <Badge variant={found ? "default" : row.error ? "destructive" : "outline"}>
+                        {found ? "Bulundu" : row.error ? "Erişilemedi" : "Yok"}
+                      </Badge>
+                    </button>
+                  );
+                })}
+              </div>
             )}
 
             {sites && form.type === "change" && (

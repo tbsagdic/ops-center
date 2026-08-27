@@ -3,12 +3,22 @@ import {
   buildRedirectVhostWithSsl,
   buildVhost,
   extractSslPaths,
-  parseServerBlocks,
-  replaceServerNames,
   retargetLogPaths,
   stripCertbotArtifacts,
 } from "@/lib/nginx/config";
+import {
+  blocksForDomain,
+  domainsSharingBlockWith,
+  extractDomainBlocks,
+  removeDomainBlocks,
+  swapDomainInServerNames,
+  unrelatedDomainsIn,
+} from "@/lib/nginx/domain-blocks";
 import { shellQuote } from "@/lib/ssh/shell-quote";
+import {
+  parseGrepFileList,
+  serverNameGrepPattern,
+} from "@/lib/nginx/vhost-search";
 import { SshError, type SshConnection } from "@/lib/ssh/client";
 import type { OperationContext, StepKey } from "./steps";
 
@@ -120,10 +130,32 @@ export function assertSafePath(value: string, label: string): string {
   return trimmed;
 }
 
-/** Alan adını grep için düzenli ifadeye çevirir (nokta literal olmalı). */
-function domainPattern(domain: string): string {
-  const escaped = domain.replaceAll(".", "\\.");
-  return `^[[:space:]]*server_name[[:space:]][^;]*(^|[[:space:]])${escaped}([[:space:]]|;)`;
+/**
+ * Alan adını tanımlayan vhost dosyalarını arar.
+ *
+ * grep'in çıkış kodları ayrıştırılır: 1 "eşleşme yok" demektir, 2 ise gerçek bir
+ * hatadır (okuma izni yok, dizin yok, sudo reddedildi). İkisini aynı saymak bir
+ * erişim sorununu "alan adı bulunamadı" gibi göstererek yanlış teşhise yol açardı.
+ */
+async function findVhostFiles(
+  ctx: StepRunContext,
+  domain: string
+): Promise<string[]> {
+  const result = await tryRun(
+    ctx,
+    `grep -rlE ${shellQuote(serverNameGrepPattern(domain))} ${shellQuote(ctx.sitesAvailable)}`,
+    true
+  );
+
+  if (result.code > 1) {
+    throw new StepError(
+      `${ctx.sitesAvailable} dizini taranamadı. Kullanıcının bu dizini okuma yetkisi ` +
+        "veya sudo hakkı olmayabilir.",
+      `${result.stdout} ${result.stderr}`.trim().slice(0, 2_000)
+    );
+  }
+
+  return parseGrepFileList(result.stdout);
 }
 
 /** Komutu çalıştırır; sıfır olmayan çıkışta adım hatası fırlatır. */
@@ -260,12 +292,7 @@ async function preflight(ctx: StepRunContext): Promise<StepResult> {
   }
 
   // Yeni alan adı başka bir vhost'ta tanımlıysa nginx çakışma uyarısı verir.
-  const conflict = await tryRun(
-    ctx,
-    `grep -rlE ${shellQuote(domainPattern(operation.new_domain))} ${shellQuote(ctx.sitesAvailable)}`,
-    true
-  );
-  const conflictFiles = conflict.stdout.split("\n").map((l) => l.trim()).filter(Boolean);
+  const conflictFiles = await findVhostFiles(ctx, operation.new_domain);
   if (conflictFiles.length > 0) {
     throw new StepError(
       `${operation.new_domain} zaten şu dosyada tanımlı: ${conflictFiles.join(", ")}. ` +
@@ -281,16 +308,12 @@ async function preflight(ctx: StepRunContext): Promise<StepResult> {
     const oldDomain = operation.old_domain;
     if (!oldDomain) throw new StepError("Eski alan adı kaydı eksik.");
 
-    const found = await tryRun(
-      ctx,
-      `grep -rlE ${shellQuote(domainPattern(oldDomain))} ${shellQuote(ctx.sitesAvailable)}`,
-      true
-    );
-    const files = found.stdout.split("\n").map((l) => l.trim()).filter(Boolean);
+    const files = await findVhostFiles(ctx, oldDomain);
     if (files.length === 0) {
       throw new StepError(
         `${oldDomain} için ${ctx.sitesAvailable} altında bir site tanımı bulunamadı. ` +
-          "Alan adı bu sunucuda barınmıyor olabilir."
+          "Alan adı başka bir sunucuda barınıyor olabilir: formdaki \"Sunucusunu bul\" " +
+          "düğmesiyle kayıtlı sunucuların tamamını tarayabilirsiniz."
       );
     }
     if (files.length > 1) {
@@ -303,10 +326,32 @@ async function preflight(ctx: StepRunContext): Promise<StepResult> {
     ctx.log("info", `Kaynak site tanımı: ${sourceVhostPath}`);
 
     const content = await readRemoteFile(ctx, sourceVhostPath);
-    const blocks = parseServerBlocks(content);
-    const httpBlock = blocks.find((block) => !block.isSsl) ?? blocks[0];
+
+    // Alan adı, başka alan adlarıyla aynı server bloğunu paylaşıyorsa bloğun
+    // server_name'ini değiştirmek onları da taşır: otomatik işlem güvenli değil.
+    const shared = domainsSharingBlockWith(content, oldDomain);
+    if (shared.length > 0) {
+      throw new StepError(
+        `${oldDomain}, ${sourceVhostPath} içinde şu alan adlarıyla aynı server bloğunda tanımlı: ` +
+          `${shared.join(", ")}. Bu bloğu otomatik taşımak diğer alan adlarını da etkilerdi; ` +
+          "önce bu alan adını kendi bloğuna ayırın."
+      );
+    }
+
+    // Aynı dosyada başka siteler varsa eski alan adı dosyadan çıkarılarak
+    // pasife alınır (dosyanın tamamı yayından kaldırılmaz); kullanıcı bilsin.
+    const others = unrelatedDomainsIn(content, oldDomain);
+    if (others.length > 0) {
+      warnings.push(
+        `${sourceVhostPath} dosyasında başka alan adları da tanımlı: ${others.join(", ")}. ` +
+          "Bunlara dokunulmayacak; yalnız eski alan adının blokları dosyadan çıkarılacak."
+      );
+    }
+
+    const targetBlocks = blocksForDomain(content, oldDomain);
+    const httpBlock = targetBlocks.find((block) => !block.isSsl) ?? targetBlocks[0];
     if (!httpBlock) {
-      throw new StepError(`${sourceVhostPath} içinde server bloğu bulunamadı.`);
+      throw new StepError(`${sourceVhostPath} içinde ${oldDomain} için server bloğu bulunamadı.`);
     }
     documentRoot = documentRoot ?? httpBlock.root ?? undefined;
     proxyPass = proxyPass ?? httpBlock.proxyPass ?? undefined;
@@ -414,18 +459,35 @@ async function writeVhost(ctx: StepRunContext): Promise<StepResult> {
   let content: string;
   if (operation.type === "change") {
     const sourcePath = context.sourceVhostPath;
-    if (!sourcePath) {
+    const oldDomain = operation.old_domain;
+    if (!sourcePath || !oldDomain) {
       throw new StepError("Kaynak site tanımı bulunamadı; ön kontrolü tekrar çalıştırın.");
     }
     const original = await readRemoteFile(ctx, sourcePath);
-    const stripped = stripCertbotArtifacts(original);
+
+    // Dosyanın tamamı değil, yalnız bu alan adına ait bloklar taşınır: aynı
+    // dosyada barınan diğer siteler yeni tanıma sızmamalı.
+    const extracted = extractDomainBlocks(original, oldDomain);
+    if (!extracted.trim()) {
+      throw new StepError(
+        `${sourcePath} içinde ${oldDomain} için server bloğu bulunamadı.`
+      );
+    }
+
+    const stripped = stripCertbotArtifacts(extracted);
     if (!stripped.includes("server")) {
       throw new StepError(
         "Kaynak dosyada HTTP sunucu bloğu kalmadı; site yalnızca HTTPS için tanımlanmış olabilir."
       );
     }
-    const renamed = replaceServerNames(stripped, names);
-    content = retargetLogPaths(renamed, operation.old_domain ?? "", operation.new_domain);
+
+    const renamed = swapDomainInServerNames(
+      stripped,
+      oldDomain,
+      operation.new_domain,
+      operation.include_www
+    );
+    content = retargetLogPaths(renamed, oldDomain, operation.new_domain);
     ctx.log("info", "Mevcut yapılandırma kopyalandı; yalnız alan adı ve log yolları değişti.");
   } else {
     const documentRoot = operation.document_root ?? context.documentRoot ?? null;
@@ -662,19 +724,31 @@ async function deactivateOld(ctx: StepRunContext): Promise<StepResult> {
     throw new StepError("Eski site tanımı bilinmiyor; ön kontrolü tekrar çalıştırın.");
   }
 
-  // sites-enabled altında bu dosyaya işaret eden tüm bağlantılar kaldırılır.
+  const original = await readRemoteFile(ctx, sourcePath);
+  const sslPaths = extractSslPaths(original);
+  const others = unrelatedDomainsIn(original, oldDomain);
   const fileName = sourcePath.replace(/^.*\//, "");
   const linkPath = `${ctx.sitesEnabled}/${fileName}`;
-  await run(ctx, `rm -f ${shellQuote(linkPath)}`, {
-    sudo: true,
-    failMessage: "Eski site bağlantısı kaldırılamadı.",
-  });
-  ctx.log("info", `Eski site pasife alındı: ${linkPath}`);
+
+  if (others.length > 0) {
+    // Dosyada başka siteler de tanımlı. Dosyayı pasife almak onları da yayından
+    // düşürürdü; bu yüzden yalnız bu alan adının blokları dosyadan çıkarılır.
+    const remaining = removeDomainBlocks(original, oldDomain);
+    await writeRemoteFile(ctx, sourcePath, remaining);
+    ctx.log(
+      "info",
+      `${oldDomain} blokları ${fileName} dosyasından çıkarıldı; dosyadaki diğer alan adları korundu: ${others.join(", ")}`
+    );
+  } else {
+    await run(ctx, `rm -f ${shellQuote(linkPath)}`, {
+      sudo: true,
+      failMessage: "Eski site bağlantısı kaldırılamadı.",
+    });
+    ctx.log("info", `Eski site pasife alındı: ${linkPath}`);
+  }
 
   let redirectPath: string | undefined;
   if (operation.redirect_old) {
-    const original = await readRemoteFile(ctx, sourcePath);
-    const sslPaths = extractSslPaths(original);
     if (!sslPaths) {
       ctx.log(
         "warn",
@@ -700,8 +774,12 @@ async function deactivateOld(ctx: StepRunContext): Promise<StepResult> {
   try {
     await testNginx(ctx);
   } catch (error) {
-    // Eski siteyi geri aç: yayında boşluk oluşmasın.
-    await tryRun(ctx, `ln -sfn ${shellQuote(sourcePath)} ${shellQuote(linkPath)}`, true);
+    // Eski siteyi olduğu gibi geri getir: yayında boşluk oluşmasın.
+    if (others.length > 0) {
+      await writeRemoteFile(ctx, sourcePath, original);
+    } else {
+      await tryRun(ctx, `ln -sfn ${shellQuote(sourcePath)} ${shellQuote(linkPath)}`, true);
+    }
     if (redirectPath) {
       await tryRun(
         ctx,

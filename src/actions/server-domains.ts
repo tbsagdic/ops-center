@@ -14,6 +14,10 @@ import { connectSsh, SshError } from "@/lib/ssh/client";
 import { shellQuote } from "@/lib/ssh/shell-quote";
 import { parseServerBlocks } from "@/lib/nginx/config";
 import {
+  parseGrepFileList,
+  serverNameGrepPattern,
+} from "@/lib/nginx/vhost-search";
+import {
   MAX_LOG_LINES,
   MAX_LOG_LINE_LENGTH,
   parseContext,
@@ -899,5 +903,117 @@ export async function listOperations(
     return ok(operations.map(toView));
   } catch (error) {
     return handleError(error);
+  }
+}
+
+// ─── Alan adı arama ──────────────────────────────────────────────────────────
+
+export type DomainLocation = {
+  serverId: string;
+  serverName: string;
+  address: string;
+  /** Alan adının tanımlı olduğu vhost dosyaları. */
+  files: string[];
+  /** Sunucuya bağlanılamadıysa nedeni. */
+  error?: string;
+};
+
+/** Aynı anda kaç sunucuya bağlanılacağı; çok sayıda kayıtta ağı boğmamak için. */
+const LOCATE_CONCURRENCY = 5;
+/** Aramaya dahil edilecek azami sunucu sayısı. */
+const LOCATE_MAX_SERVERS = 25;
+
+/**
+ * Bir alan adının hangi kayıtlı sunucuda tanımlı olduğunu bulur.
+ *
+ * Kullanıcının hangi sitenin hangi makinede olduğunu ezbere bilmesi gerekmesin
+ * diye vardır: alan adı yazılır, panel erişebildiği sunucuları tarar. Salt okuma
+ * yapar; hiçbir sunucuya yazmaz.
+ */
+export async function locateDomain(
+  domain: string
+): Promise<ActionResponse<DomainLocation[]>> {
+  try {
+    await requirePermission("server_domains.view");
+
+    const normalized = normalizeDomain(domain);
+    if (!normalized) return fail("Geçerli bir alan adı girin.");
+
+    const db = await getTenantDb();
+    const servers = await db.server.findMany({
+      where: { status: "active" },
+      orderBy: { name: "asc" },
+      take: LOCATE_MAX_SERVERS,
+      select: SERVER_ACCESS_SELECT,
+    });
+
+    const usable = servers.filter((server) => server.ssh_password_encrypted);
+    if (usable.length === 0) {
+      return fail(
+        "Aramaya uygun sunucu yok. Sunucular ekranından SSH kullanıcısı ve parolası kayıtlı en az bir aktif sunucu gerekir."
+      );
+    }
+
+    const results: DomainLocation[] = [];
+    for (let i = 0; i < usable.length; i += LOCATE_CONCURRENCY) {
+      const batch = usable.slice(i, i + LOCATE_CONCURRENCY);
+      const settled = await Promise.all(
+        batch.map((server) => searchOneServer(server as ServerAccessRecord, normalized))
+      );
+      results.push(...settled);
+    }
+
+    // Bulunan sunucular başa alınır; erişilemeyenler sona.
+    results.sort((a, b) => {
+      if (a.files.length !== b.files.length) return b.files.length - a.files.length;
+      return Number(Boolean(a.error)) - Number(Boolean(b.error));
+    });
+
+    return ok(results);
+  } catch (error) {
+    return handleError(error);
+  }
+}
+
+/** Tek bir sunucuda alan adını arar; bağlantı hatası sonucu düşürmez. */
+async function searchOneServer(
+  server: ServerAccessRecord,
+  domain: string
+): Promise<DomainLocation> {
+  const base: DomainLocation = {
+    serverId: server.id,
+    serverName: server.name,
+    address: server.primary_ip || server.hostname || "",
+    files: [],
+  };
+
+  let access;
+  try {
+    access = buildServerAccess(server);
+  } catch (error) {
+    return {
+      ...base,
+      error: error instanceof Error ? error.message : "Erişim bilgileri eksik.",
+    };
+  }
+
+  try {
+    const connection = await connectSsh(access.target);
+    try {
+      const result = await connection.sudo(
+        `grep -rlE ${shellQuote(serverNameGrepPattern(domain))} ${shellQuote(access.sitesAvailable)}`
+      );
+      if (result.code > 1) {
+        return { ...base, error: `${access.sitesAvailable} taranamadı (yetki?).` };
+      }
+      return { ...base, files: parseGrepFileList(result.stdout) };
+    } finally {
+      connection.close();
+    }
+  } catch (error) {
+    return {
+      ...base,
+      error: error instanceof SshError ? error.message : "Sunucuya bağlanılamadı.",
+    };
   }
 }
