@@ -47,6 +47,10 @@ export type ServerFormValues = {
   ssh_user: string;
   ssh_password: string;
   has_ssh_password: boolean;
+  ssh_sudo_password: string;
+  has_sudo_password: boolean;
+  web_stack: string;
+  nginx_sites_path: string;
   status: string;
   renewal_at: string;
   monthly_cost: string;
@@ -60,6 +64,7 @@ const EMPTY: ServerFormValues = {
   primary_ip: "", region: "", operating_system: "", cpu_cores: "", ram_mb: "",
   disk_gb: "", management_url: "", ssh_port: "22", ssh_user: "", status: "active",
   ssh_password: "", has_ssh_password: false,
+  ssh_sudo_password: "", has_sudo_password: false, web_stack: "", nginx_sites_path: "",
   renewal_at: "", monthly_cost: "", cost_period: "monthly", currency: "TRY",
   manual_fx_rate: "",
 };
@@ -261,6 +266,58 @@ export function ServerForm({
           </Button>
         </div>
       </Field>
+
+      <Field
+        label="sudo Parolası"
+        error={errors.ssh_sudo_password}
+        hint={
+          values.has_sudo_password
+            ? "Kayıtlı bir sudo parolası var. Değiştirmek için yeni parola girin."
+            : "Yalnızca sudo parolanız SSH parolanızdan farklıysa doldurun; boşsa SSH parolası kullanılır."
+        }
+      >
+        <Input
+          type="password"
+          value={values.ssh_sudo_password}
+          onChange={(e) => set("ssh_sudo_password", e.target.value)}
+          autoComplete="new-password"
+          spellCheck={false}
+          placeholder={values.has_sudo_password ? "Değiştirmek için yeni parola girin" : ""}
+        />
+      </Field>
+
+      <div className="grid grid-cols-2 gap-4">
+        <Field
+          label="Web Yığını"
+          error={errors.web_stack}
+          hint="Sunucu Domain Kontrolü ekranı yalnız nginx seçili sunucuları listeler."
+        >
+          <Select
+            value={values.web_stack || "none"}
+            onValueChange={(v) => set("web_stack", v === "none" ? "" : v)}
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">Belirtilmedi</SelectItem>
+              <SelectItem value="nginx">Nginx</SelectItem>
+            </SelectContent>
+          </Select>
+        </Field>
+        <Field
+          label="Nginx vhost Dizini"
+          error={errors.nginx_sites_path}
+          hint="Boşsa /etc/nginx/sites-available kullanılır."
+        >
+          <Input
+            value={values.nginx_sites_path}
+            onChange={(e) => set("nginx_sites_path", e.target.value)}
+            placeholder="/etc/nginx/sites-available"
+            spellCheck={false}
+          />
+        </Field>
+      </div>
 
       <Field label="Yönetim URL" error={errors.management_url}>
         <Input value={values.management_url} onChange={(e) => set("management_url", e.target.value)} />

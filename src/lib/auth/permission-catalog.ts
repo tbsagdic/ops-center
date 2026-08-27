@@ -40,6 +40,13 @@ export const PERMISSION_MODULES = [
     operations: PERMISSION_OPERATIONS,
   },
   {
+    key: "server_domains",
+    label: "Sunucu Domain Kontrolü",
+    description:
+      "Sunucuya SSH ile bağlanıp nginx site tanımı açma, alan adı değiştirme ve SSL alma",
+    operations: PERMISSION_OPERATIONS,
+  },
+  {
     key: "finance",
     label: "Finans",
     description: "Fatura, ödeme ve faturalama planları",
@@ -90,10 +97,17 @@ export const ALL_PERMISSIONS: readonly PermissionAction[] = [
 ];
 
 const COMMON_VIEW_PERMISSIONS: PermissionAction[] = PERMISSION_MODULES.filter(
-  (module) => module.key !== "finance" && module.key !== "system"
+  (module) =>
+    module.key !== "finance" &&
+    module.key !== "system" &&
+    // Sunucuda komut çalıştıran ekran hiçbir role varsayılan olarak açılmaz.
+    module.key !== "server_domains"
 ).map((module) => `${module.key}.view` as PermissionAction);
 
 const TECHNICAL_WRITE_PERMISSIONS: PermissionAction[] = [
+  // Yürütme (server_domains.create) bilinçli olarak yok: sunucuda kalıcı değişiklik
+  // yapan bir yetki, rol yönetiminden açıkça verilmelidir.
+  "server_domains.view",
   "customers.create",
   "customers.update",
   "projects.create",

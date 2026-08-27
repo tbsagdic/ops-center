@@ -6,7 +6,7 @@
 /*
  * This file should be your main import to use Prisma-related types and utilities in a browser. 
  * Use it to get access to models, enums, and input types.
- *
+ * 
  * This file does not contain a `PrismaClient` class, nor several other helpers that are intended as server-side only.
  * See `client.ts` for the standard, server-side entry point.
  *
@@ -39,7 +39,7 @@ export type Session = Prisma.SessionModel
 export type WorkspaceUser = Prisma.WorkspaceUserModel
 /**
  * Model WorkspaceRolePermission
- *
+ * 
  */
 export type WorkspaceRolePermission = Prisma.WorkspaceRolePermissionModel
 /**
@@ -100,6 +100,12 @@ export type ProjectServer = Prisma.ProjectServerModel
  *  * birden çok lisansta geçebilir ve eşleşme her zaman güncel kalır.
  */
 export type Domain = Prisma.DomainModel
+/**
+ * Model ServerDomainOperation
+ * Bir sunucuda domain ekleme/değiştirme işinin adım adım yürütülen kaydı.
+ * Her adım ayrı bir istekte çalıştırılır; böylece serverless süre sınırına takılmaz.
+ */
+export type ServerDomainOperation = Prisma.ServerDomainOperationModel
 /**
  * Model BillingSchedule
  * 

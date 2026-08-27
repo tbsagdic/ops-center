@@ -42,6 +42,7 @@ export type DomainMinAggregateOutputType = {
   workspace_id: string | null
   customer_id: string | null
   project_id: string | null
+  server_id: string | null
   name: string | null
   normalized_name: string | null
   registrar: string | null
@@ -65,6 +66,7 @@ export type DomainMaxAggregateOutputType = {
   workspace_id: string | null
   customer_id: string | null
   project_id: string | null
+  server_id: string | null
   name: string | null
   normalized_name: string | null
   registrar: string | null
@@ -88,6 +90,7 @@ export type DomainCountAggregateOutputType = {
   workspace_id: number
   customer_id: number
   project_id: number
+  server_id: number
   name: number
   normalized_name: number
   registrar: number
@@ -121,6 +124,7 @@ export type DomainMinAggregateInputType = {
   workspace_id?: true
   customer_id?: true
   project_id?: true
+  server_id?: true
   name?: true
   normalized_name?: true
   registrar?: true
@@ -144,6 +148,7 @@ export type DomainMaxAggregateInputType = {
   workspace_id?: true
   customer_id?: true
   project_id?: true
+  server_id?: true
   name?: true
   normalized_name?: true
   registrar?: true
@@ -167,6 +172,7 @@ export type DomainCountAggregateInputType = {
   workspace_id?: true
   customer_id?: true
   project_id?: true
+  server_id?: true
   name?: true
   normalized_name?: true
   registrar?: true
@@ -277,6 +283,7 @@ export type DomainGroupByOutputType = {
   workspace_id: string
   customer_id: string | null
   project_id: string | null
+  server_id: string | null
   name: string
   normalized_name: string
   registrar: string | null
@@ -323,6 +330,7 @@ export type DomainWhereInput = {
   workspace_id?: Prisma.UuidFilter<"Domain"> | string
   customer_id?: Prisma.UuidNullableFilter<"Domain"> | string | null
   project_id?: Prisma.UuidNullableFilter<"Domain"> | string | null
+  server_id?: Prisma.UuidNullableFilter<"Domain"> | string | null
   name?: Prisma.StringFilter<"Domain"> | string
   normalized_name?: Prisma.StringFilter<"Domain"> | string
   registrar?: Prisma.StringNullableFilter<"Domain"> | string | null
@@ -342,6 +350,7 @@ export type DomainWhereInput = {
   workspace?: Prisma.XOR<Prisma.WorkspaceScalarRelationFilter, Prisma.WorkspaceWhereInput>
   customer?: Prisma.XOR<Prisma.CustomerNullableScalarRelationFilter, Prisma.CustomerWhereInput> | null
   project?: Prisma.XOR<Prisma.ProjectNullableScalarRelationFilter, Prisma.ProjectWhereInput> | null
+  server?: Prisma.XOR<Prisma.ServerNullableScalarRelationFilter, Prisma.ServerWhereInput> | null
 }
 
 export type DomainOrderByWithRelationInput = {
@@ -349,6 +358,7 @@ export type DomainOrderByWithRelationInput = {
   workspace_id?: Prisma.SortOrder
   customer_id?: Prisma.SortOrderInput | Prisma.SortOrder
   project_id?: Prisma.SortOrderInput | Prisma.SortOrder
+  server_id?: Prisma.SortOrderInput | Prisma.SortOrder
   name?: Prisma.SortOrder
   normalized_name?: Prisma.SortOrder
   registrar?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -368,6 +378,7 @@ export type DomainOrderByWithRelationInput = {
   workspace?: Prisma.WorkspaceOrderByWithRelationInput
   customer?: Prisma.CustomerOrderByWithRelationInput
   project?: Prisma.ProjectOrderByWithRelationInput
+  server?: Prisma.ServerOrderByWithRelationInput
 }
 
 export type DomainWhereUniqueInput = Prisma.AtLeast<{
@@ -379,6 +390,7 @@ export type DomainWhereUniqueInput = Prisma.AtLeast<{
   workspace_id?: Prisma.UuidFilter<"Domain"> | string
   customer_id?: Prisma.UuidNullableFilter<"Domain"> | string | null
   project_id?: Prisma.UuidNullableFilter<"Domain"> | string | null
+  server_id?: Prisma.UuidNullableFilter<"Domain"> | string | null
   name?: Prisma.StringFilter<"Domain"> | string
   normalized_name?: Prisma.StringFilter<"Domain"> | string
   registrar?: Prisma.StringNullableFilter<"Domain"> | string | null
@@ -398,6 +410,7 @@ export type DomainWhereUniqueInput = Prisma.AtLeast<{
   workspace?: Prisma.XOR<Prisma.WorkspaceScalarRelationFilter, Prisma.WorkspaceWhereInput>
   customer?: Prisma.XOR<Prisma.CustomerNullableScalarRelationFilter, Prisma.CustomerWhereInput> | null
   project?: Prisma.XOR<Prisma.ProjectNullableScalarRelationFilter, Prisma.ProjectWhereInput> | null
+  server?: Prisma.XOR<Prisma.ServerNullableScalarRelationFilter, Prisma.ServerWhereInput> | null
 }, "id" | "workspace_id_normalized_name">
 
 export type DomainOrderByWithAggregationInput = {
@@ -405,6 +418,7 @@ export type DomainOrderByWithAggregationInput = {
   workspace_id?: Prisma.SortOrder
   customer_id?: Prisma.SortOrderInput | Prisma.SortOrder
   project_id?: Prisma.SortOrderInput | Prisma.SortOrder
+  server_id?: Prisma.SortOrderInput | Prisma.SortOrder
   name?: Prisma.SortOrder
   normalized_name?: Prisma.SortOrder
   registrar?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -436,6 +450,7 @@ export type DomainScalarWhereWithAggregatesInput = {
   workspace_id?: Prisma.UuidWithAggregatesFilter<"Domain"> | string
   customer_id?: Prisma.UuidNullableWithAggregatesFilter<"Domain"> | string | null
   project_id?: Prisma.UuidNullableWithAggregatesFilter<"Domain"> | string | null
+  server_id?: Prisma.UuidNullableWithAggregatesFilter<"Domain"> | string | null
   name?: Prisma.StringWithAggregatesFilter<"Domain"> | string
   normalized_name?: Prisma.StringWithAggregatesFilter<"Domain"> | string
   registrar?: Prisma.StringNullableWithAggregatesFilter<"Domain"> | string | null
@@ -475,6 +490,7 @@ export type DomainCreateInput = {
   workspace: Prisma.WorkspaceCreateNestedOneWithoutDomainsInput
   customer?: Prisma.CustomerCreateNestedOneWithoutDomainsInput
   project?: Prisma.ProjectCreateNestedOneWithoutDomainsInput
+  server?: Prisma.ServerCreateNestedOneWithoutDomainsInput
 }
 
 export type DomainUncheckedCreateInput = {
@@ -482,6 +498,7 @@ export type DomainUncheckedCreateInput = {
   workspace_id: string
   customer_id?: string | null
   project_id?: string | null
+  server_id?: string | null
   name: string
   normalized_name: string
   registrar?: string | null
@@ -521,6 +538,7 @@ export type DomainUpdateInput = {
   workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutDomainsNestedInput
   customer?: Prisma.CustomerUpdateOneWithoutDomainsNestedInput
   project?: Prisma.ProjectUpdateOneWithoutDomainsNestedInput
+  server?: Prisma.ServerUpdateOneWithoutDomainsNestedInput
 }
 
 export type DomainUncheckedUpdateInput = {
@@ -528,6 +546,7 @@ export type DomainUncheckedUpdateInput = {
   workspace_id?: Prisma.StringFieldUpdateOperationsInput | string
   customer_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   project_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  server_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   normalized_name?: Prisma.StringFieldUpdateOperationsInput | string
   registrar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -551,6 +570,7 @@ export type DomainCreateManyInput = {
   workspace_id: string
   customer_id?: string | null
   project_id?: string | null
+  server_id?: string | null
   name: string
   normalized_name: string
   registrar?: string | null
@@ -594,6 +614,7 @@ export type DomainUncheckedUpdateManyInput = {
   workspace_id?: Prisma.StringFieldUpdateOperationsInput | string
   customer_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   project_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  server_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   normalized_name?: Prisma.StringFieldUpdateOperationsInput | string
   registrar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -632,6 +653,7 @@ export type DomainCountOrderByAggregateInput = {
   workspace_id?: Prisma.SortOrder
   customer_id?: Prisma.SortOrder
   project_id?: Prisma.SortOrder
+  server_id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   normalized_name?: Prisma.SortOrder
   registrar?: Prisma.SortOrder
@@ -659,6 +681,7 @@ export type DomainMaxOrderByAggregateInput = {
   workspace_id?: Prisma.SortOrder
   customer_id?: Prisma.SortOrder
   project_id?: Prisma.SortOrder
+  server_id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   normalized_name?: Prisma.SortOrder
   registrar?: Prisma.SortOrder
@@ -682,6 +705,7 @@ export type DomainMinOrderByAggregateInput = {
   workspace_id?: Prisma.SortOrder
   customer_id?: Prisma.SortOrder
   project_id?: Prisma.SortOrder
+  server_id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   normalized_name?: Prisma.SortOrder
   registrar?: Prisma.SortOrder
@@ -830,6 +854,48 @@ export type DomainUncheckedUpdateManyWithoutProjectNestedInput = {
   deleteMany?: Prisma.DomainScalarWhereInput | Prisma.DomainScalarWhereInput[]
 }
 
+export type DomainCreateNestedManyWithoutServerInput = {
+  create?: Prisma.XOR<Prisma.DomainCreateWithoutServerInput, Prisma.DomainUncheckedCreateWithoutServerInput> | Prisma.DomainCreateWithoutServerInput[] | Prisma.DomainUncheckedCreateWithoutServerInput[]
+  connectOrCreate?: Prisma.DomainCreateOrConnectWithoutServerInput | Prisma.DomainCreateOrConnectWithoutServerInput[]
+  createMany?: Prisma.DomainCreateManyServerInputEnvelope
+  connect?: Prisma.DomainWhereUniqueInput | Prisma.DomainWhereUniqueInput[]
+}
+
+export type DomainUncheckedCreateNestedManyWithoutServerInput = {
+  create?: Prisma.XOR<Prisma.DomainCreateWithoutServerInput, Prisma.DomainUncheckedCreateWithoutServerInput> | Prisma.DomainCreateWithoutServerInput[] | Prisma.DomainUncheckedCreateWithoutServerInput[]
+  connectOrCreate?: Prisma.DomainCreateOrConnectWithoutServerInput | Prisma.DomainCreateOrConnectWithoutServerInput[]
+  createMany?: Prisma.DomainCreateManyServerInputEnvelope
+  connect?: Prisma.DomainWhereUniqueInput | Prisma.DomainWhereUniqueInput[]
+}
+
+export type DomainUpdateManyWithoutServerNestedInput = {
+  create?: Prisma.XOR<Prisma.DomainCreateWithoutServerInput, Prisma.DomainUncheckedCreateWithoutServerInput> | Prisma.DomainCreateWithoutServerInput[] | Prisma.DomainUncheckedCreateWithoutServerInput[]
+  connectOrCreate?: Prisma.DomainCreateOrConnectWithoutServerInput | Prisma.DomainCreateOrConnectWithoutServerInput[]
+  upsert?: Prisma.DomainUpsertWithWhereUniqueWithoutServerInput | Prisma.DomainUpsertWithWhereUniqueWithoutServerInput[]
+  createMany?: Prisma.DomainCreateManyServerInputEnvelope
+  set?: Prisma.DomainWhereUniqueInput | Prisma.DomainWhereUniqueInput[]
+  disconnect?: Prisma.DomainWhereUniqueInput | Prisma.DomainWhereUniqueInput[]
+  delete?: Prisma.DomainWhereUniqueInput | Prisma.DomainWhereUniqueInput[]
+  connect?: Prisma.DomainWhereUniqueInput | Prisma.DomainWhereUniqueInput[]
+  update?: Prisma.DomainUpdateWithWhereUniqueWithoutServerInput | Prisma.DomainUpdateWithWhereUniqueWithoutServerInput[]
+  updateMany?: Prisma.DomainUpdateManyWithWhereWithoutServerInput | Prisma.DomainUpdateManyWithWhereWithoutServerInput[]
+  deleteMany?: Prisma.DomainScalarWhereInput | Prisma.DomainScalarWhereInput[]
+}
+
+export type DomainUncheckedUpdateManyWithoutServerNestedInput = {
+  create?: Prisma.XOR<Prisma.DomainCreateWithoutServerInput, Prisma.DomainUncheckedCreateWithoutServerInput> | Prisma.DomainCreateWithoutServerInput[] | Prisma.DomainUncheckedCreateWithoutServerInput[]
+  connectOrCreate?: Prisma.DomainCreateOrConnectWithoutServerInput | Prisma.DomainCreateOrConnectWithoutServerInput[]
+  upsert?: Prisma.DomainUpsertWithWhereUniqueWithoutServerInput | Prisma.DomainUpsertWithWhereUniqueWithoutServerInput[]
+  createMany?: Prisma.DomainCreateManyServerInputEnvelope
+  set?: Prisma.DomainWhereUniqueInput | Prisma.DomainWhereUniqueInput[]
+  disconnect?: Prisma.DomainWhereUniqueInput | Prisma.DomainWhereUniqueInput[]
+  delete?: Prisma.DomainWhereUniqueInput | Prisma.DomainWhereUniqueInput[]
+  connect?: Prisma.DomainWhereUniqueInput | Prisma.DomainWhereUniqueInput[]
+  update?: Prisma.DomainUpdateWithWhereUniqueWithoutServerInput | Prisma.DomainUpdateWithWhereUniqueWithoutServerInput[]
+  updateMany?: Prisma.DomainUpdateManyWithWhereWithoutServerInput | Prisma.DomainUpdateManyWithWhereWithoutServerInput[]
+  deleteMany?: Prisma.DomainScalarWhereInput | Prisma.DomainScalarWhereInput[]
+}
+
 export type EnumDomainStatusFieldUpdateOperationsInput = {
   set?: $Enums.DomainStatus
 }
@@ -854,12 +920,14 @@ export type DomainCreateWithoutWorkspaceInput = {
   deleted_at?: Date | string | null
   customer?: Prisma.CustomerCreateNestedOneWithoutDomainsInput
   project?: Prisma.ProjectCreateNestedOneWithoutDomainsInput
+  server?: Prisma.ServerCreateNestedOneWithoutDomainsInput
 }
 
 export type DomainUncheckedCreateWithoutWorkspaceInput = {
   id?: string
   customer_id?: string | null
   project_id?: string | null
+  server_id?: string | null
   name: string
   normalized_name: string
   registrar?: string | null
@@ -912,6 +980,7 @@ export type DomainScalarWhereInput = {
   workspace_id?: Prisma.UuidFilter<"Domain"> | string
   customer_id?: Prisma.UuidNullableFilter<"Domain"> | string | null
   project_id?: Prisma.UuidNullableFilter<"Domain"> | string | null
+  server_id?: Prisma.UuidNullableFilter<"Domain"> | string | null
   name?: Prisma.StringFilter<"Domain"> | string
   normalized_name?: Prisma.StringFilter<"Domain"> | string
   registrar?: Prisma.StringNullableFilter<"Domain"> | string | null
@@ -950,12 +1019,14 @@ export type DomainCreateWithoutCustomerInput = {
   deleted_at?: Date | string | null
   workspace: Prisma.WorkspaceCreateNestedOneWithoutDomainsInput
   project?: Prisma.ProjectCreateNestedOneWithoutDomainsInput
+  server?: Prisma.ServerCreateNestedOneWithoutDomainsInput
 }
 
 export type DomainUncheckedCreateWithoutCustomerInput = {
   id?: string
   workspace_id: string
   project_id?: string | null
+  server_id?: string | null
   name: string
   normalized_name: string
   registrar?: string | null
@@ -1020,12 +1091,14 @@ export type DomainCreateWithoutProjectInput = {
   deleted_at?: Date | string | null
   workspace: Prisma.WorkspaceCreateNestedOneWithoutDomainsInput
   customer?: Prisma.CustomerCreateNestedOneWithoutDomainsInput
+  server?: Prisma.ServerCreateNestedOneWithoutDomainsInput
 }
 
 export type DomainUncheckedCreateWithoutProjectInput = {
   id?: string
   workspace_id: string
   customer_id?: string | null
+  server_id?: string | null
   name: string
   normalized_name: string
   registrar?: string | null
@@ -1070,10 +1143,83 @@ export type DomainUpdateManyWithWhereWithoutProjectInput = {
   data: Prisma.XOR<Prisma.DomainUpdateManyMutationInput, Prisma.DomainUncheckedUpdateManyWithoutProjectInput>
 }
 
+export type DomainCreateWithoutServerInput = {
+  id?: string
+  name: string
+  normalized_name: string
+  registrar?: string | null
+  registrar_url?: string | null
+  status?: $Enums.DomainStatus
+  registered_at?: Date | string | null
+  expires_at?: Date | string | null
+  ssl_expires_at?: Date | string | null
+  auto_renew?: boolean
+  nameservers?: string | null
+  annual_cost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  currency?: string
+  notes?: string | null
+  created_at?: Date | string
+  updated_at?: Date | string
+  deleted_at?: Date | string | null
+  workspace: Prisma.WorkspaceCreateNestedOneWithoutDomainsInput
+  customer?: Prisma.CustomerCreateNestedOneWithoutDomainsInput
+  project?: Prisma.ProjectCreateNestedOneWithoutDomainsInput
+}
+
+export type DomainUncheckedCreateWithoutServerInput = {
+  id?: string
+  workspace_id: string
+  customer_id?: string | null
+  project_id?: string | null
+  name: string
+  normalized_name: string
+  registrar?: string | null
+  registrar_url?: string | null
+  status?: $Enums.DomainStatus
+  registered_at?: Date | string | null
+  expires_at?: Date | string | null
+  ssl_expires_at?: Date | string | null
+  auto_renew?: boolean
+  nameservers?: string | null
+  annual_cost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  currency?: string
+  notes?: string | null
+  created_at?: Date | string
+  updated_at?: Date | string
+  deleted_at?: Date | string | null
+}
+
+export type DomainCreateOrConnectWithoutServerInput = {
+  where: Prisma.DomainWhereUniqueInput
+  create: Prisma.XOR<Prisma.DomainCreateWithoutServerInput, Prisma.DomainUncheckedCreateWithoutServerInput>
+}
+
+export type DomainCreateManyServerInputEnvelope = {
+  data: Prisma.DomainCreateManyServerInput | Prisma.DomainCreateManyServerInput[]
+  skipDuplicates?: boolean
+}
+
+export type DomainUpsertWithWhereUniqueWithoutServerInput = {
+  where: Prisma.DomainWhereUniqueInput
+  update: Prisma.XOR<Prisma.DomainUpdateWithoutServerInput, Prisma.DomainUncheckedUpdateWithoutServerInput>
+  create: Prisma.XOR<Prisma.DomainCreateWithoutServerInput, Prisma.DomainUncheckedCreateWithoutServerInput>
+}
+
+export type DomainUpdateWithWhereUniqueWithoutServerInput = {
+  where: Prisma.DomainWhereUniqueInput
+  data: Prisma.XOR<Prisma.DomainUpdateWithoutServerInput, Prisma.DomainUncheckedUpdateWithoutServerInput>
+}
+
+export type DomainUpdateManyWithWhereWithoutServerInput = {
+  where: Prisma.DomainScalarWhereInput
+  data: Prisma.XOR<Prisma.DomainUpdateManyMutationInput, Prisma.DomainUncheckedUpdateManyWithoutServerInput>
+}
+
 export type DomainCreateManyWorkspaceInput = {
   id?: string
   customer_id?: string | null
   project_id?: string | null
+  server_id?: string | null
   name: string
   normalized_name: string
   registrar?: string | null
@@ -1112,12 +1258,14 @@ export type DomainUpdateWithoutWorkspaceInput = {
   deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   customer?: Prisma.CustomerUpdateOneWithoutDomainsNestedInput
   project?: Prisma.ProjectUpdateOneWithoutDomainsNestedInput
+  server?: Prisma.ServerUpdateOneWithoutDomainsNestedInput
 }
 
 export type DomainUncheckedUpdateWithoutWorkspaceInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   customer_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   project_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  server_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   normalized_name?: Prisma.StringFieldUpdateOperationsInput | string
   registrar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1140,6 +1288,7 @@ export type DomainUncheckedUpdateManyWithoutWorkspaceInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   customer_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   project_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  server_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   normalized_name?: Prisma.StringFieldUpdateOperationsInput | string
   registrar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1162,6 +1311,7 @@ export type DomainCreateManyCustomerInput = {
   id?: string
   workspace_id: string
   project_id?: string | null
+  server_id?: string | null
   name: string
   normalized_name: string
   registrar?: string | null
@@ -1200,12 +1350,14 @@ export type DomainUpdateWithoutCustomerInput = {
   deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutDomainsNestedInput
   project?: Prisma.ProjectUpdateOneWithoutDomainsNestedInput
+  server?: Prisma.ServerUpdateOneWithoutDomainsNestedInput
 }
 
 export type DomainUncheckedUpdateWithoutCustomerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   workspace_id?: Prisma.StringFieldUpdateOperationsInput | string
   project_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  server_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   normalized_name?: Prisma.StringFieldUpdateOperationsInput | string
   registrar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1228,6 +1380,7 @@ export type DomainUncheckedUpdateManyWithoutCustomerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   workspace_id?: Prisma.StringFieldUpdateOperationsInput | string
   project_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  server_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   normalized_name?: Prisma.StringFieldUpdateOperationsInput | string
   registrar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1250,6 +1403,7 @@ export type DomainCreateManyProjectInput = {
   id?: string
   workspace_id: string
   customer_id?: string | null
+  server_id?: string | null
   name: string
   normalized_name: string
   registrar?: string | null
@@ -1288,12 +1442,14 @@ export type DomainUpdateWithoutProjectInput = {
   deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutDomainsNestedInput
   customer?: Prisma.CustomerUpdateOneWithoutDomainsNestedInput
+  server?: Prisma.ServerUpdateOneWithoutDomainsNestedInput
 }
 
 export type DomainUncheckedUpdateWithoutProjectInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   workspace_id?: Prisma.StringFieldUpdateOperationsInput | string
   customer_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  server_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   normalized_name?: Prisma.StringFieldUpdateOperationsInput | string
   registrar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1316,6 +1472,99 @@ export type DomainUncheckedUpdateManyWithoutProjectInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   workspace_id?: Prisma.StringFieldUpdateOperationsInput | string
   customer_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  server_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  normalized_name?: Prisma.StringFieldUpdateOperationsInput | string
+  registrar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  registrar_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumDomainStatusFieldUpdateOperationsInput | $Enums.DomainStatus
+  registered_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expires_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  ssl_expires_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  auto_renew?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  nameservers?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  annual_cost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+}
+
+export type DomainCreateManyServerInput = {
+  id?: string
+  workspace_id: string
+  customer_id?: string | null
+  project_id?: string | null
+  name: string
+  normalized_name: string
+  registrar?: string | null
+  registrar_url?: string | null
+  status?: $Enums.DomainStatus
+  registered_at?: Date | string | null
+  expires_at?: Date | string | null
+  ssl_expires_at?: Date | string | null
+  auto_renew?: boolean
+  nameservers?: string | null
+  annual_cost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  currency?: string
+  notes?: string | null
+  created_at?: Date | string
+  updated_at?: Date | string
+  deleted_at?: Date | string | null
+}
+
+export type DomainUpdateWithoutServerInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  normalized_name?: Prisma.StringFieldUpdateOperationsInput | string
+  registrar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  registrar_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumDomainStatusFieldUpdateOperationsInput | $Enums.DomainStatus
+  registered_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expires_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  ssl_expires_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  auto_renew?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  nameservers?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  annual_cost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutDomainsNestedInput
+  customer?: Prisma.CustomerUpdateOneWithoutDomainsNestedInput
+  project?: Prisma.ProjectUpdateOneWithoutDomainsNestedInput
+}
+
+export type DomainUncheckedUpdateWithoutServerInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  workspace_id?: Prisma.StringFieldUpdateOperationsInput | string
+  customer_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  project_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  normalized_name?: Prisma.StringFieldUpdateOperationsInput | string
+  registrar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  registrar_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumDomainStatusFieldUpdateOperationsInput | $Enums.DomainStatus
+  registered_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expires_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  ssl_expires_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  auto_renew?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  nameservers?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  annual_cost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+}
+
+export type DomainUncheckedUpdateManyWithoutServerInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  workspace_id?: Prisma.StringFieldUpdateOperationsInput | string
+  customer_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  project_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   normalized_name?: Prisma.StringFieldUpdateOperationsInput | string
   registrar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1341,6 +1590,7 @@ export type DomainSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   workspace_id?: boolean
   customer_id?: boolean
   project_id?: boolean
+  server_id?: boolean
   name?: boolean
   normalized_name?: boolean
   registrar?: boolean
@@ -1360,6 +1610,7 @@ export type DomainSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>
   customer?: boolean | Prisma.Domain$customerArgs<ExtArgs>
   project?: boolean | Prisma.Domain$projectArgs<ExtArgs>
+  server?: boolean | Prisma.Domain$serverArgs<ExtArgs>
 }, ExtArgs["result"]["domain"]>
 
 export type DomainSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1367,6 +1618,7 @@ export type DomainSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extens
   workspace_id?: boolean
   customer_id?: boolean
   project_id?: boolean
+  server_id?: boolean
   name?: boolean
   normalized_name?: boolean
   registrar?: boolean
@@ -1386,6 +1638,7 @@ export type DomainSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extens
   workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>
   customer?: boolean | Prisma.Domain$customerArgs<ExtArgs>
   project?: boolean | Prisma.Domain$projectArgs<ExtArgs>
+  server?: boolean | Prisma.Domain$serverArgs<ExtArgs>
 }, ExtArgs["result"]["domain"]>
 
 export type DomainSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1393,6 +1646,7 @@ export type DomainSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
   workspace_id?: boolean
   customer_id?: boolean
   project_id?: boolean
+  server_id?: boolean
   name?: boolean
   normalized_name?: boolean
   registrar?: boolean
@@ -1412,6 +1666,7 @@ export type DomainSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
   workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>
   customer?: boolean | Prisma.Domain$customerArgs<ExtArgs>
   project?: boolean | Prisma.Domain$projectArgs<ExtArgs>
+  server?: boolean | Prisma.Domain$serverArgs<ExtArgs>
 }, ExtArgs["result"]["domain"]>
 
 export type DomainSelectScalar = {
@@ -1419,6 +1674,7 @@ export type DomainSelectScalar = {
   workspace_id?: boolean
   customer_id?: boolean
   project_id?: boolean
+  server_id?: boolean
   name?: boolean
   normalized_name?: boolean
   registrar?: boolean
@@ -1437,21 +1693,24 @@ export type DomainSelectScalar = {
   deleted_at?: boolean
 }
 
-export type DomainOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "workspace_id" | "customer_id" | "project_id" | "name" | "normalized_name" | "registrar" | "registrar_url" | "status" | "registered_at" | "expires_at" | "ssl_expires_at" | "auto_renew" | "nameservers" | "annual_cost" | "currency" | "notes" | "created_at" | "updated_at" | "deleted_at", ExtArgs["result"]["domain"]>
+export type DomainOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "workspace_id" | "customer_id" | "project_id" | "server_id" | "name" | "normalized_name" | "registrar" | "registrar_url" | "status" | "registered_at" | "expires_at" | "ssl_expires_at" | "auto_renew" | "nameservers" | "annual_cost" | "currency" | "notes" | "created_at" | "updated_at" | "deleted_at", ExtArgs["result"]["domain"]>
 export type DomainInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>
   customer?: boolean | Prisma.Domain$customerArgs<ExtArgs>
   project?: boolean | Prisma.Domain$projectArgs<ExtArgs>
+  server?: boolean | Prisma.Domain$serverArgs<ExtArgs>
 }
 export type DomainIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>
   customer?: boolean | Prisma.Domain$customerArgs<ExtArgs>
   project?: boolean | Prisma.Domain$projectArgs<ExtArgs>
+  server?: boolean | Prisma.Domain$serverArgs<ExtArgs>
 }
 export type DomainIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>
   customer?: boolean | Prisma.Domain$customerArgs<ExtArgs>
   project?: boolean | Prisma.Domain$projectArgs<ExtArgs>
+  server?: boolean | Prisma.Domain$serverArgs<ExtArgs>
 }
 
 export type $DomainPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1460,12 +1719,17 @@ export type $DomainPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     workspace: Prisma.$WorkspacePayload<ExtArgs>
     customer: Prisma.$CustomerPayload<ExtArgs> | null
     project: Prisma.$ProjectPayload<ExtArgs> | null
+    server: Prisma.$ServerPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     workspace_id: string
     customer_id: string | null
     project_id: string | null
+    /**
+     * Domain'in yayınlandığı sunucu (sunucu domain kontrolü ile eşleşir).
+     */
+    server_id: string | null
     name: string
     normalized_name: string
     registrar: string | null
@@ -1879,6 +2143,7 @@ export interface Prisma__DomainClient<T, Null = never, ExtArgs extends runtime.T
   workspace<T extends Prisma.WorkspaceDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.WorkspaceDefaultArgs<ExtArgs>>): Prisma.Prisma__WorkspaceClient<runtime.Types.Result.GetResult<Prisma.$WorkspacePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   customer<T extends Prisma.Domain$customerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Domain$customerArgs<ExtArgs>>): Prisma.Prisma__CustomerClient<runtime.Types.Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   project<T extends Prisma.Domain$projectArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Domain$projectArgs<ExtArgs>>): Prisma.Prisma__ProjectClient<runtime.Types.Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  server<T extends Prisma.Domain$serverArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Domain$serverArgs<ExtArgs>>): Prisma.Prisma__ServerClient<runtime.Types.Result.GetResult<Prisma.$ServerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1912,6 +2177,7 @@ export interface DomainFieldRefs {
   readonly workspace_id: Prisma.FieldRef<"Domain", 'String'>
   readonly customer_id: Prisma.FieldRef<"Domain", 'String'>
   readonly project_id: Prisma.FieldRef<"Domain", 'String'>
+  readonly server_id: Prisma.FieldRef<"Domain", 'String'>
   readonly name: Prisma.FieldRef<"Domain", 'String'>
   readonly normalized_name: Prisma.FieldRef<"Domain", 'String'>
   readonly registrar: Prisma.FieldRef<"Domain", 'String'>
@@ -2364,6 +2630,25 @@ export type Domain$projectArgs<ExtArgs extends runtime.Types.Extensions.Internal
    */
   include?: Prisma.ProjectInclude<ExtArgs> | null
   where?: Prisma.ProjectWhereInput
+}
+
+/**
+ * Domain.server
+ */
+export type Domain$serverArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Server
+   */
+  select?: Prisma.ServerSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Server
+   */
+  omit?: Prisma.ServerOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ServerInclude<ExtArgs> | null
+  where?: Prisma.ServerWhereInput
 }
 
 /**

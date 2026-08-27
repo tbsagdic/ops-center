@@ -157,6 +157,32 @@ export const CostPeriod = {
 export type CostPeriod = (typeof CostPeriod)[keyof typeof CostPeriod]
 
 
+export const ServerWebStack = {
+  nginx: 'nginx'
+} as const
+
+export type ServerWebStack = (typeof ServerWebStack)[keyof typeof ServerWebStack]
+
+
+export const ServerDomainOpType = {
+  add: 'add',
+  change: 'change'
+} as const
+
+export type ServerDomainOpType = (typeof ServerDomainOpType)[keyof typeof ServerDomainOpType]
+
+
+export const ServerDomainOpStatus = {
+  pending: 'pending',
+  running: 'running',
+  succeeded: 'succeeded',
+  failed: 'failed',
+  rolled_back: 'rolled_back'
+} as const
+
+export type ServerDomainOpStatus = (typeof ServerDomainOpStatus)[keyof typeof ServerDomainOpStatus]
+
+
 export const IntervalUnit = {
   month: 'month',
   year: 'year'

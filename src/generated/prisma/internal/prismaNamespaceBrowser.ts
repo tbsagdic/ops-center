@@ -67,6 +67,7 @@ export const ModelName = {
   Server: 'Server',
   ProjectServer: 'ProjectServer',
   Domain: 'Domain',
+  ServerDomainOperation: 'ServerDomainOperation',
   BillingSchedule: 'BillingSchedule',
   Invoice: 'Invoice',
   Payment: 'Payment',
@@ -342,6 +343,10 @@ export const ServerScalarFieldEnum = {
   ssh_port: 'ssh_port',
   ssh_user: 'ssh_user',
   ssh_password_encrypted: 'ssh_password_encrypted',
+  ssh_sudo_password_encrypted: 'ssh_sudo_password_encrypted',
+  ssh_host_fingerprint: 'ssh_host_fingerprint',
+  web_stack: 'web_stack',
+  nginx_sites_path: 'nginx_sites_path',
   status: 'status',
   renewal_at: 'renewal_at',
   monthly_cost: 'monthly_cost',
@@ -375,6 +380,7 @@ export const DomainScalarFieldEnum = {
   workspace_id: 'workspace_id',
   customer_id: 'customer_id',
   project_id: 'project_id',
+  server_id: 'server_id',
   name: 'name',
   normalized_name: 'normalized_name',
   registrar: 'registrar',
@@ -394,6 +400,36 @@ export const DomainScalarFieldEnum = {
 } as const
 
 export type DomainScalarFieldEnum = (typeof DomainScalarFieldEnum)[keyof typeof DomainScalarFieldEnum]
+
+
+export const ServerDomainOperationScalarFieldEnum = {
+  id: 'id',
+  workspace_id: 'workspace_id',
+  server_id: 'server_id',
+  actor_user_id: 'actor_user_id',
+  type: 'type',
+  status: 'status',
+  new_domain: 'new_domain',
+  old_domain: 'old_domain',
+  include_www: 'include_www',
+  enable_ssl: 'enable_ssl',
+  ssl_email: 'ssl_email',
+  redirect_old: 'redirect_old',
+  document_root: 'document_root',
+  proxy_pass: 'proxy_pass',
+  steps: 'steps',
+  context: 'context',
+  current_step: 'current_step',
+  backup_path: 'backup_path',
+  log: 'log',
+  error: 'error',
+  started_at: 'started_at',
+  finished_at: 'finished_at',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type ServerDomainOperationScalarFieldEnum = (typeof ServerDomainOperationScalarFieldEnum)[keyof typeof ServerDomainOperationScalarFieldEnum]
 
 
 export const BillingScheduleScalarFieldEnum = {

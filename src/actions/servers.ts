@@ -31,6 +31,8 @@ function buildData(data: ServerData) {
     management_url: data.management_url,
     ssh_port: data.ssh_port,
     ssh_user: data.ssh_user,
+    web_stack: data.web_stack ?? null,
+    nginx_sites_path: data.nginx_sites_path ?? null,
     status: data.status,
     renewal_at: data.renewal_at ? new Date(data.renewal_at) : null,
     monthly_cost: data.monthly_cost ?? null,
@@ -43,6 +45,18 @@ function buildData(data: ServerData) {
 
 type ServerData = ReturnType<typeof serverSchema.parse>;
 
+/** Parolalar yalnız yeni değer girildiğinde yazılır; boş form alanı mevcut kaydı silmez. */
+function encryptServerSecrets(data: ServerData) {
+  return {
+    ...(data.ssh_password
+      ? { ssh_password_encrypted: encryptSecret(data.ssh_password) }
+      : {}),
+    ...(data.ssh_sudo_password
+      ? { ssh_sudo_password_encrypted: encryptSecret(data.ssh_sudo_password) }
+      : {}),
+  };
+}
+
 export async function createServer(
   input: unknown
 ): Promise<ActionResponse<{ id: string }>> {
@@ -52,16 +66,12 @@ export async function createServer(
     if (!parsed.success) return zodFail(parsed.error);
 
     const db = await getTenantDb();
-    const encryptedPassword = parsed.data.ssh_password
-      ? encryptSecret(parsed.data.ssh_password)
-      : undefined;
+    const secrets = encryptServerSecrets(parsed.data);
     const created = await db.server.create({
       data: {
         ...buildData(parsed.data),
         workspace_id: ctx.workspaceId,
-        ...(encryptedPassword
-          ? { ssh_password_encrypted: encryptedPassword }
-          : {}),
+        ...secrets,
       },
     });
 
@@ -94,16 +104,11 @@ export async function updateServer(
     const before = await db.server.findUnique({ where: { id } });
     if (!before) return fail("Sunucu bulunamadı.");
 
-    const encryptedPassword = parsed.data.ssh_password
-      ? encryptSecret(parsed.data.ssh_password)
-      : undefined;
     const updated = await db.server.update({
       where: { id },
       data: {
         ...buildData(parsed.data),
-        ...(encryptedPassword
-          ? { ssh_password_encrypted: encryptedPassword }
-          : {}),
+        ...encryptServerSecrets(parsed.data),
       },
     });
 

@@ -30,6 +30,7 @@ const TENANT_MODELS = new Set<string>([
   "WebhookDelivery",
   "AuditLog",
   "GithubConnection",
+  "ServerDomainOperation",
 ]);
 
 const SOFT_DELETE_MODELS = new Set<string>([

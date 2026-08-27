@@ -24,7 +24,7 @@ export * as $Enums from './enums'
 export * from "./enums"
 /**
  * ## Prisma Client
- *
+ * 
  * Type-safe database client for TypeScript
  * @example
  * ```
@@ -63,7 +63,7 @@ export type Session = Prisma.SessionModel
 export type WorkspaceUser = Prisma.WorkspaceUserModel
 /**
  * Model WorkspaceRolePermission
- *
+ * 
  */
 export type WorkspaceRolePermission = Prisma.WorkspaceRolePermissionModel
 /**
@@ -124,6 +124,12 @@ export type ProjectServer = Prisma.ProjectServerModel
  *  * birden çok lisansta geçebilir ve eşleşme her zaman güncel kalır.
  */
 export type Domain = Prisma.DomainModel
+/**
+ * Model ServerDomainOperation
+ * Bir sunucuda domain ekleme/değiştirme işinin adım adım yürütülen kaydı.
+ * Her adım ayrı bir istekte çalıştırılır; böylece serverless süre sınırına takılmaz.
+ */
+export type ServerDomainOperation = Prisma.ServerDomainOperationModel
 /**
  * Model BillingSchedule
  * 

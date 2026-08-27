@@ -413,6 +413,7 @@ export const ModelName = {
   Server: 'Server',
   ProjectServer: 'ProjectServer',
   Domain: 'Domain',
+  ServerDomainOperation: 'ServerDomainOperation',
   BillingSchedule: 'BillingSchedule',
   Invoice: 'Invoice',
   Payment: 'Payment',
@@ -434,7 +435,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "workspace" | "user" | "session" | "workspaceUser" | "workspaceRolePermission" | "otpCode" | "customer" | "product" | "project" | "license" | "licenseDomain" | "licenseActivation" | "licenseEvent" | "server" | "projectServer" | "domain" | "billingSchedule" | "invoice" | "payment" | "githubConnection" | "webhookDelivery" | "auditLog"
+    modelProps: "workspace" | "user" | "session" | "workspaceUser" | "workspaceRolePermission" | "otpCode" | "customer" | "product" | "project" | "license" | "licenseDomain" | "licenseActivation" | "licenseEvent" | "server" | "projectServer" | "domain" | "serverDomainOperation" | "billingSchedule" | "invoice" | "payment" | "githubConnection" | "webhookDelivery" | "auditLog"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1622,6 +1623,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ServerDomainOperation: {
+      payload: Prisma.$ServerDomainOperationPayload<ExtArgs>
+      fields: Prisma.ServerDomainOperationFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ServerDomainOperationFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServerDomainOperationPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ServerDomainOperationFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServerDomainOperationPayload>
+        }
+        findFirst: {
+          args: Prisma.ServerDomainOperationFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServerDomainOperationPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ServerDomainOperationFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServerDomainOperationPayload>
+        }
+        findMany: {
+          args: Prisma.ServerDomainOperationFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServerDomainOperationPayload>[]
+        }
+        create: {
+          args: Prisma.ServerDomainOperationCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServerDomainOperationPayload>
+        }
+        createMany: {
+          args: Prisma.ServerDomainOperationCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ServerDomainOperationCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServerDomainOperationPayload>[]
+        }
+        delete: {
+          args: Prisma.ServerDomainOperationDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServerDomainOperationPayload>
+        }
+        update: {
+          args: Prisma.ServerDomainOperationUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServerDomainOperationPayload>
+        }
+        deleteMany: {
+          args: Prisma.ServerDomainOperationDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ServerDomainOperationUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ServerDomainOperationUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServerDomainOperationPayload>[]
+        }
+        upsert: {
+          args: Prisma.ServerDomainOperationUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServerDomainOperationPayload>
+        }
+        aggregate: {
+          args: Prisma.ServerDomainOperationAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateServerDomainOperation>
+        }
+        groupBy: {
+          args: Prisma.ServerDomainOperationGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ServerDomainOperationGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ServerDomainOperationCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ServerDomainOperationCountAggregateOutputType> | number
+        }
+      }
+    }
     BillingSchedule: {
       payload: Prisma.$BillingSchedulePayload<ExtArgs>
       fields: Prisma.BillingScheduleFieldRefs
@@ -2356,6 +2431,10 @@ export const ServerScalarFieldEnum = {
   ssh_port: 'ssh_port',
   ssh_user: 'ssh_user',
   ssh_password_encrypted: 'ssh_password_encrypted',
+  ssh_sudo_password_encrypted: 'ssh_sudo_password_encrypted',
+  ssh_host_fingerprint: 'ssh_host_fingerprint',
+  web_stack: 'web_stack',
+  nginx_sites_path: 'nginx_sites_path',
   status: 'status',
   renewal_at: 'renewal_at',
   monthly_cost: 'monthly_cost',
@@ -2389,6 +2468,7 @@ export const DomainScalarFieldEnum = {
   workspace_id: 'workspace_id',
   customer_id: 'customer_id',
   project_id: 'project_id',
+  server_id: 'server_id',
   name: 'name',
   normalized_name: 'normalized_name',
   registrar: 'registrar',
@@ -2408,6 +2488,36 @@ export const DomainScalarFieldEnum = {
 } as const
 
 export type DomainScalarFieldEnum = (typeof DomainScalarFieldEnum)[keyof typeof DomainScalarFieldEnum]
+
+
+export const ServerDomainOperationScalarFieldEnum = {
+  id: 'id',
+  workspace_id: 'workspace_id',
+  server_id: 'server_id',
+  actor_user_id: 'actor_user_id',
+  type: 'type',
+  status: 'status',
+  new_domain: 'new_domain',
+  old_domain: 'old_domain',
+  include_www: 'include_www',
+  enable_ssl: 'enable_ssl',
+  ssl_email: 'ssl_email',
+  redirect_old: 'redirect_old',
+  document_root: 'document_root',
+  proxy_pass: 'proxy_pass',
+  steps: 'steps',
+  context: 'context',
+  current_step: 'current_step',
+  backup_path: 'backup_path',
+  log: 'log',
+  error: 'error',
+  started_at: 'started_at',
+  finished_at: 'finished_at',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type ServerDomainOperationScalarFieldEnum = (typeof ServerDomainOperationScalarFieldEnum)[keyof typeof ServerDomainOperationScalarFieldEnum]
 
 
 export const BillingScheduleScalarFieldEnum = {
@@ -2845,6 +2955,20 @@ export type ListEnumServerTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$P
 
 
 /**
+ * Reference to a field of type 'ServerWebStack'
+ */
+export type EnumServerWebStackFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ServerWebStack'>
+    
+
+
+/**
+ * Reference to a field of type 'ServerWebStack[]'
+ */
+export type ListEnumServerWebStackFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ServerWebStack[]'>
+    
+
+
+/**
  * Reference to a field of type 'ServerStatus'
  */
 export type EnumServerStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ServerStatus'>
@@ -2883,6 +3007,34 @@ export type EnumDomainStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$Pri
  * Reference to a field of type 'DomainStatus[]'
  */
 export type ListEnumDomainStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DomainStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ServerDomainOpType'
+ */
+export type EnumServerDomainOpTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ServerDomainOpType'>
+    
+
+
+/**
+ * Reference to a field of type 'ServerDomainOpType[]'
+ */
+export type ListEnumServerDomainOpTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ServerDomainOpType[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ServerDomainOpStatus'
+ */
+export type EnumServerDomainOpStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ServerDomainOpStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'ServerDomainOpStatus[]'
+ */
+export type ListEnumServerDomainOpStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ServerDomainOpStatus[]'>
     
 
 
@@ -3164,6 +3316,7 @@ export type GlobalOmitConfig = {
   server?: Prisma.ServerOmit
   projectServer?: Prisma.ProjectServerOmit
   domain?: Prisma.DomainOmit
+  serverDomainOperation?: Prisma.ServerDomainOperationOmit
   billingSchedule?: Prisma.BillingScheduleOmit
   invoice?: Prisma.InvoiceOmit
   payment?: Prisma.PaymentOmit

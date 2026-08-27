@@ -112,6 +112,23 @@ enum CostPeriod {
   yearly
 }
 
+enum ServerWebStack {
+  nginx
+}
+
+enum ServerDomainOpType {
+  add
+  change
+}
+
+enum ServerDomainOpStatus {
+  pending
+  running
+  succeeded
+  failed
+  rolled_back
+}
+
 enum IntervalUnit {
   month
   year
@@ -183,6 +200,7 @@ model Workspace {
   audit_logs         AuditLog[]
   github_connection  GithubConnection?
   role_permissions   WorkspaceRolePermission[]
+  domain_operations  ServerDomainOperation[]
 
   @@map("workspaces")
 }
@@ -211,6 +229,7 @@ model User {
 
   github_connections      GithubConnection[]        @relation("GithubConnectionAuthor")
   role_permission_updates WorkspaceRolePermission[] @relation("RolePermissionUpdatedBy")
+  domain_operations       ServerDomainOperation[]
 
   @@map("users")
 }
@@ -520,6 +539,14 @@ model Server {
   ssh_port               Int          @default(22)
   ssh_user               String?
   ssh_password_encrypted String?
+  /// sudo parolası SSH parolasından farklıysa; boşsa SSH parolası denenir.
+  ssh_sudo_password_encrypted String?
+  /// İlk başarılı bağlantıda kaydedilen host anahtarı parmak izi (TOFU).
+  ssh_host_fingerprint   String?
+  /// Domain otomasyonunun hedeflediği web sunucu yığını.
+  web_stack              ServerWebStack? 
+  /// Nginx vhost dizini; boşsa /etc/nginx/sites-available varsayılır.
+  nginx_sites_path       String?
   status                 ServerStatus @default(active)
   renewal_at             DateTime?
   monthly_cost           Decimal?     @db.Decimal(14, 2)
@@ -531,8 +558,10 @@ model Server {
   updated_at             DateTime     @updatedAt
   deleted_at             DateTime?
 
-  workspace     Workspace       @relation(fields: [workspace_id], references: [id])
-  project_links ProjectServer[]
+  workspace          Workspace               @relation(fields: [workspace_id], references: [id])
+  project_links      ProjectServer[]
+  domains            Domain[]
+  domain_operations  ServerDomainOperation[]
 
   @@index([workspace_id])
   @@index([workspace_id, status])
@@ -569,6 +598,8 @@ model Domain {
   workspace_id    String       @db.Uuid
   customer_id     String?      @db.Uuid
   project_id      String?      @db.Uuid
+  /// Domain'in yayınlandığı sunucu (sunucu domain kontrolü ile eşleşir).
+  server_id       String?      @db.Uuid
   name            String
   normalized_name String
   registrar       String?
@@ -589,12 +620,65 @@ model Domain {
   workspace Workspace @relation(fields: [workspace_id], references: [id])
   customer  Customer? @relation(fields: [customer_id], references: [id])
   project   Project?  @relation(fields: [project_id], references: [id])
+  server    Server?   @relation(fields: [server_id], references: [id])
 
   @@unique([workspace_id, normalized_name])
+  @@index([workspace_id, server_id])
   @@index([workspace_id])
   @@index([workspace_id, status])
   @@index([workspace_id, expires_at])
   @@map("domains")
+}
+
+/// Bir sunucuda domain ekleme/değiştirme işinin adım adım yürütülen kaydı.
+/// Her adım ayrı bir istekte çalıştırılır; böylece serverless süre sınırına takılmaz.
+model ServerDomainOperation {
+  id                    String               @id @default(uuid(4)) @db.Uuid
+  workspace_id          String               @db.Uuid
+  server_id             String               @db.Uuid
+  actor_user_id         String?              @db.Uuid
+  type                  ServerDomainOpType
+  status                ServerDomainOpStatus @default(pending)
+  /// Eklenecek / yeni alan adı (normalize edilmiş).
+  new_domain            String
+  /// change işleminde yerine geçilen alan adı (normalize edilmiş).
+  old_domain            String?
+  /// www.<domain> da sertifikaya ve server_name'e dahil edilsin mi?
+  include_www           Boolean              @default(true)
+  /// Let's Encrypt sertifikası alınsın mı?
+  enable_ssl            Boolean              @default(true)
+  /// Let's Encrypt bildirim adresi.
+  ssl_email             String?
+  /// Eski alan adı yeniye 301 ile yönlendirilsin mi? (kapalıysa vhost tamamen pasifleşir)
+  redirect_old          Boolean              @default(true)
+  /// Sitenin kök dizini; change işleminde eski vhost'tan tespit edilir.
+  document_root         String?
+  /// Ters vekil hedefi (ör. http://127.0.0.1:3000); doluysa root yerine proxy vhost yazılır.
+  proxy_pass            String?
+  /// Adım listesi ve her adımın durumu.
+  steps                 Json
+  /// Adımlar arasında taşınan bağlam (tespit edilen vhost yolu, php soketi vb.).
+  context               Json?
+  /// Sıradaki adımın dizini.
+  current_step          Int                  @default(0)
+  /// Sunucuda oluşturulan yedek dizini (geri alma için).
+  backup_path           String?
+  /// Çalıştırma günlüğü (parolalar maskelenir).
+  log                   Json?
+  error                 String?
+  started_at            DateTime?
+  finished_at           DateTime?
+  created_at            DateTime             @default(now())
+  updated_at            DateTime             @updatedAt
+
+  workspace Workspace @relation(fields: [workspace_id], references: [id])
+  server    Server    @relation(fields: [server_id], references: [id])
+  actor     User?     @relation(fields: [actor_user_id], references: [id], onDelete: SetNull)
+
+  @@index([workspace_id, created_at])
+  @@index([workspace_id, server_id])
+  @@index([workspace_id, status])
+  @@map("server_domain_operations")
 }
 
 // ─── Finans ──────────────────────────────────────────────────────────────────

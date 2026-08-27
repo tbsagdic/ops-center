@@ -62,6 +62,10 @@ export type ServerMinAggregateOutputType = {
   ssh_port: number | null
   ssh_user: string | null
   ssh_password_encrypted: string | null
+  ssh_sudo_password_encrypted: string | null
+  ssh_host_fingerprint: string | null
+  web_stack: $Enums.ServerWebStack | null
+  nginx_sites_path: string | null
   status: $Enums.ServerStatus | null
   renewal_at: Date | null
   monthly_cost: runtime.Decimal | null
@@ -91,6 +95,10 @@ export type ServerMaxAggregateOutputType = {
   ssh_port: number | null
   ssh_user: string | null
   ssh_password_encrypted: string | null
+  ssh_sudo_password_encrypted: string | null
+  ssh_host_fingerprint: string | null
+  web_stack: $Enums.ServerWebStack | null
+  nginx_sites_path: string | null
   status: $Enums.ServerStatus | null
   renewal_at: Date | null
   monthly_cost: runtime.Decimal | null
@@ -120,6 +128,10 @@ export type ServerCountAggregateOutputType = {
   ssh_port: number
   ssh_user: number
   ssh_password_encrypted: number
+  ssh_sudo_password_encrypted: number
+  ssh_host_fingerprint: number
+  web_stack: number
+  nginx_sites_path: number
   status: number
   renewal_at: number
   monthly_cost: number
@@ -169,6 +181,10 @@ export type ServerMinAggregateInputType = {
   ssh_port?: true
   ssh_user?: true
   ssh_password_encrypted?: true
+  ssh_sudo_password_encrypted?: true
+  ssh_host_fingerprint?: true
+  web_stack?: true
+  nginx_sites_path?: true
   status?: true
   renewal_at?: true
   monthly_cost?: true
@@ -198,6 +214,10 @@ export type ServerMaxAggregateInputType = {
   ssh_port?: true
   ssh_user?: true
   ssh_password_encrypted?: true
+  ssh_sudo_password_encrypted?: true
+  ssh_host_fingerprint?: true
+  web_stack?: true
+  nginx_sites_path?: true
   status?: true
   renewal_at?: true
   monthly_cost?: true
@@ -227,6 +247,10 @@ export type ServerCountAggregateInputType = {
   ssh_port?: true
   ssh_user?: true
   ssh_password_encrypted?: true
+  ssh_sudo_password_encrypted?: true
+  ssh_host_fingerprint?: true
+  web_stack?: true
+  nginx_sites_path?: true
   status?: true
   renewal_at?: true
   monthly_cost?: true
@@ -343,6 +367,10 @@ export type ServerGroupByOutputType = {
   ssh_port: number
   ssh_user: string | null
   ssh_password_encrypted: string | null
+  ssh_sudo_password_encrypted: string | null
+  ssh_host_fingerprint: string | null
+  web_stack: $Enums.ServerWebStack | null
+  nginx_sites_path: string | null
   status: $Enums.ServerStatus
   renewal_at: Date | null
   monthly_cost: runtime.Decimal | null
@@ -395,6 +423,10 @@ export type ServerWhereInput = {
   ssh_port?: Prisma.IntFilter<"Server"> | number
   ssh_user?: Prisma.StringNullableFilter<"Server"> | string | null
   ssh_password_encrypted?: Prisma.StringNullableFilter<"Server"> | string | null
+  ssh_sudo_password_encrypted?: Prisma.StringNullableFilter<"Server"> | string | null
+  ssh_host_fingerprint?: Prisma.StringNullableFilter<"Server"> | string | null
+  web_stack?: Prisma.EnumServerWebStackNullableFilter<"Server"> | $Enums.ServerWebStack | null
+  nginx_sites_path?: Prisma.StringNullableFilter<"Server"> | string | null
   status?: Prisma.EnumServerStatusFilter<"Server"> | $Enums.ServerStatus
   renewal_at?: Prisma.DateTimeNullableFilter<"Server"> | Date | string | null
   monthly_cost?: Prisma.DecimalNullableFilter<"Server"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -406,6 +438,8 @@ export type ServerWhereInput = {
   deleted_at?: Prisma.DateTimeNullableFilter<"Server"> | Date | string | null
   workspace?: Prisma.XOR<Prisma.WorkspaceScalarRelationFilter, Prisma.WorkspaceWhereInput>
   project_links?: Prisma.ProjectServerListRelationFilter
+  domains?: Prisma.DomainListRelationFilter
+  domain_operations?: Prisma.ServerDomainOperationListRelationFilter
 }
 
 export type ServerOrderByWithRelationInput = {
@@ -426,6 +460,10 @@ export type ServerOrderByWithRelationInput = {
   ssh_port?: Prisma.SortOrder
   ssh_user?: Prisma.SortOrderInput | Prisma.SortOrder
   ssh_password_encrypted?: Prisma.SortOrderInput | Prisma.SortOrder
+  ssh_sudo_password_encrypted?: Prisma.SortOrderInput | Prisma.SortOrder
+  ssh_host_fingerprint?: Prisma.SortOrderInput | Prisma.SortOrder
+  web_stack?: Prisma.SortOrderInput | Prisma.SortOrder
+  nginx_sites_path?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   renewal_at?: Prisma.SortOrderInput | Prisma.SortOrder
   monthly_cost?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -437,6 +475,8 @@ export type ServerOrderByWithRelationInput = {
   deleted_at?: Prisma.SortOrderInput | Prisma.SortOrder
   workspace?: Prisma.WorkspaceOrderByWithRelationInput
   project_links?: Prisma.ProjectServerOrderByRelationAggregateInput
+  domains?: Prisma.DomainOrderByRelationAggregateInput
+  domain_operations?: Prisma.ServerDomainOperationOrderByRelationAggregateInput
 }
 
 export type ServerWhereUniqueInput = Prisma.AtLeast<{
@@ -460,6 +500,10 @@ export type ServerWhereUniqueInput = Prisma.AtLeast<{
   ssh_port?: Prisma.IntFilter<"Server"> | number
   ssh_user?: Prisma.StringNullableFilter<"Server"> | string | null
   ssh_password_encrypted?: Prisma.StringNullableFilter<"Server"> | string | null
+  ssh_sudo_password_encrypted?: Prisma.StringNullableFilter<"Server"> | string | null
+  ssh_host_fingerprint?: Prisma.StringNullableFilter<"Server"> | string | null
+  web_stack?: Prisma.EnumServerWebStackNullableFilter<"Server"> | $Enums.ServerWebStack | null
+  nginx_sites_path?: Prisma.StringNullableFilter<"Server"> | string | null
   status?: Prisma.EnumServerStatusFilter<"Server"> | $Enums.ServerStatus
   renewal_at?: Prisma.DateTimeNullableFilter<"Server"> | Date | string | null
   monthly_cost?: Prisma.DecimalNullableFilter<"Server"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -471,6 +515,8 @@ export type ServerWhereUniqueInput = Prisma.AtLeast<{
   deleted_at?: Prisma.DateTimeNullableFilter<"Server"> | Date | string | null
   workspace?: Prisma.XOR<Prisma.WorkspaceScalarRelationFilter, Prisma.WorkspaceWhereInput>
   project_links?: Prisma.ProjectServerListRelationFilter
+  domains?: Prisma.DomainListRelationFilter
+  domain_operations?: Prisma.ServerDomainOperationListRelationFilter
 }, "id">
 
 export type ServerOrderByWithAggregationInput = {
@@ -491,6 +537,10 @@ export type ServerOrderByWithAggregationInput = {
   ssh_port?: Prisma.SortOrder
   ssh_user?: Prisma.SortOrderInput | Prisma.SortOrder
   ssh_password_encrypted?: Prisma.SortOrderInput | Prisma.SortOrder
+  ssh_sudo_password_encrypted?: Prisma.SortOrderInput | Prisma.SortOrder
+  ssh_host_fingerprint?: Prisma.SortOrderInput | Prisma.SortOrder
+  web_stack?: Prisma.SortOrderInput | Prisma.SortOrder
+  nginx_sites_path?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   renewal_at?: Prisma.SortOrderInput | Prisma.SortOrder
   monthly_cost?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -528,6 +578,10 @@ export type ServerScalarWhereWithAggregatesInput = {
   ssh_port?: Prisma.IntWithAggregatesFilter<"Server"> | number
   ssh_user?: Prisma.StringNullableWithAggregatesFilter<"Server"> | string | null
   ssh_password_encrypted?: Prisma.StringNullableWithAggregatesFilter<"Server"> | string | null
+  ssh_sudo_password_encrypted?: Prisma.StringNullableWithAggregatesFilter<"Server"> | string | null
+  ssh_host_fingerprint?: Prisma.StringNullableWithAggregatesFilter<"Server"> | string | null
+  web_stack?: Prisma.EnumServerWebStackNullableWithAggregatesFilter<"Server"> | $Enums.ServerWebStack | null
+  nginx_sites_path?: Prisma.StringNullableWithAggregatesFilter<"Server"> | string | null
   status?: Prisma.EnumServerStatusWithAggregatesFilter<"Server"> | $Enums.ServerStatus
   renewal_at?: Prisma.DateTimeNullableWithAggregatesFilter<"Server"> | Date | string | null
   monthly_cost?: Prisma.DecimalNullableWithAggregatesFilter<"Server"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -556,6 +610,10 @@ export type ServerCreateInput = {
   ssh_port?: number
   ssh_user?: string | null
   ssh_password_encrypted?: string | null
+  ssh_sudo_password_encrypted?: string | null
+  ssh_host_fingerprint?: string | null
+  web_stack?: $Enums.ServerWebStack | null
+  nginx_sites_path?: string | null
   status?: $Enums.ServerStatus
   renewal_at?: Date | string | null
   monthly_cost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -567,6 +625,8 @@ export type ServerCreateInput = {
   deleted_at?: Date | string | null
   workspace: Prisma.WorkspaceCreateNestedOneWithoutServersInput
   project_links?: Prisma.ProjectServerCreateNestedManyWithoutServerInput
+  domains?: Prisma.DomainCreateNestedManyWithoutServerInput
+  domain_operations?: Prisma.ServerDomainOperationCreateNestedManyWithoutServerInput
 }
 
 export type ServerUncheckedCreateInput = {
@@ -587,6 +647,10 @@ export type ServerUncheckedCreateInput = {
   ssh_port?: number
   ssh_user?: string | null
   ssh_password_encrypted?: string | null
+  ssh_sudo_password_encrypted?: string | null
+  ssh_host_fingerprint?: string | null
+  web_stack?: $Enums.ServerWebStack | null
+  nginx_sites_path?: string | null
   status?: $Enums.ServerStatus
   renewal_at?: Date | string | null
   monthly_cost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -597,6 +661,8 @@ export type ServerUncheckedCreateInput = {
   updated_at?: Date | string
   deleted_at?: Date | string | null
   project_links?: Prisma.ProjectServerUncheckedCreateNestedManyWithoutServerInput
+  domains?: Prisma.DomainUncheckedCreateNestedManyWithoutServerInput
+  domain_operations?: Prisma.ServerDomainOperationUncheckedCreateNestedManyWithoutServerInput
 }
 
 export type ServerUpdateInput = {
@@ -616,6 +682,10 @@ export type ServerUpdateInput = {
   ssh_port?: Prisma.IntFieldUpdateOperationsInput | number
   ssh_user?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ssh_password_encrypted?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ssh_sudo_password_encrypted?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ssh_host_fingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  web_stack?: Prisma.NullableEnumServerWebStackFieldUpdateOperationsInput | $Enums.ServerWebStack | null
+  nginx_sites_path?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumServerStatusFieldUpdateOperationsInput | $Enums.ServerStatus
   renewal_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   monthly_cost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -627,6 +697,8 @@ export type ServerUpdateInput = {
   deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutServersNestedInput
   project_links?: Prisma.ProjectServerUpdateManyWithoutServerNestedInput
+  domains?: Prisma.DomainUpdateManyWithoutServerNestedInput
+  domain_operations?: Prisma.ServerDomainOperationUpdateManyWithoutServerNestedInput
 }
 
 export type ServerUncheckedUpdateInput = {
@@ -647,6 +719,10 @@ export type ServerUncheckedUpdateInput = {
   ssh_port?: Prisma.IntFieldUpdateOperationsInput | number
   ssh_user?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ssh_password_encrypted?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ssh_sudo_password_encrypted?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ssh_host_fingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  web_stack?: Prisma.NullableEnumServerWebStackFieldUpdateOperationsInput | $Enums.ServerWebStack | null
+  nginx_sites_path?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumServerStatusFieldUpdateOperationsInput | $Enums.ServerStatus
   renewal_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   monthly_cost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -657,6 +733,8 @@ export type ServerUncheckedUpdateInput = {
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   project_links?: Prisma.ProjectServerUncheckedUpdateManyWithoutServerNestedInput
+  domains?: Prisma.DomainUncheckedUpdateManyWithoutServerNestedInput
+  domain_operations?: Prisma.ServerDomainOperationUncheckedUpdateManyWithoutServerNestedInput
 }
 
 export type ServerCreateManyInput = {
@@ -677,6 +755,10 @@ export type ServerCreateManyInput = {
   ssh_port?: number
   ssh_user?: string | null
   ssh_password_encrypted?: string | null
+  ssh_sudo_password_encrypted?: string | null
+  ssh_host_fingerprint?: string | null
+  web_stack?: $Enums.ServerWebStack | null
+  nginx_sites_path?: string | null
   status?: $Enums.ServerStatus
   renewal_at?: Date | string | null
   monthly_cost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -705,6 +787,10 @@ export type ServerUpdateManyMutationInput = {
   ssh_port?: Prisma.IntFieldUpdateOperationsInput | number
   ssh_user?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ssh_password_encrypted?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ssh_sudo_password_encrypted?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ssh_host_fingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  web_stack?: Prisma.NullableEnumServerWebStackFieldUpdateOperationsInput | $Enums.ServerWebStack | null
+  nginx_sites_path?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumServerStatusFieldUpdateOperationsInput | $Enums.ServerStatus
   renewal_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   monthly_cost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -734,6 +820,10 @@ export type ServerUncheckedUpdateManyInput = {
   ssh_port?: Prisma.IntFieldUpdateOperationsInput | number
   ssh_user?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ssh_password_encrypted?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ssh_sudo_password_encrypted?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ssh_host_fingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  web_stack?: Prisma.NullableEnumServerWebStackFieldUpdateOperationsInput | $Enums.ServerWebStack | null
+  nginx_sites_path?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumServerStatusFieldUpdateOperationsInput | $Enums.ServerStatus
   renewal_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   monthly_cost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -773,6 +863,10 @@ export type ServerCountOrderByAggregateInput = {
   ssh_port?: Prisma.SortOrder
   ssh_user?: Prisma.SortOrder
   ssh_password_encrypted?: Prisma.SortOrder
+  ssh_sudo_password_encrypted?: Prisma.SortOrder
+  ssh_host_fingerprint?: Prisma.SortOrder
+  web_stack?: Prisma.SortOrder
+  nginx_sites_path?: Prisma.SortOrder
   status?: Prisma.SortOrder
   renewal_at?: Prisma.SortOrder
   monthly_cost?: Prisma.SortOrder
@@ -811,6 +905,10 @@ export type ServerMaxOrderByAggregateInput = {
   ssh_port?: Prisma.SortOrder
   ssh_user?: Prisma.SortOrder
   ssh_password_encrypted?: Prisma.SortOrder
+  ssh_sudo_password_encrypted?: Prisma.SortOrder
+  ssh_host_fingerprint?: Prisma.SortOrder
+  web_stack?: Prisma.SortOrder
+  nginx_sites_path?: Prisma.SortOrder
   status?: Prisma.SortOrder
   renewal_at?: Prisma.SortOrder
   monthly_cost?: Prisma.SortOrder
@@ -840,6 +938,10 @@ export type ServerMinOrderByAggregateInput = {
   ssh_port?: Prisma.SortOrder
   ssh_user?: Prisma.SortOrder
   ssh_password_encrypted?: Prisma.SortOrder
+  ssh_sudo_password_encrypted?: Prisma.SortOrder
+  ssh_host_fingerprint?: Prisma.SortOrder
+  web_stack?: Prisma.SortOrder
+  nginx_sites_path?: Prisma.SortOrder
   status?: Prisma.SortOrder
   renewal_at?: Prisma.SortOrder
   monthly_cost?: Prisma.SortOrder
@@ -863,6 +965,11 @@ export type ServerSumOrderByAggregateInput = {
 export type ServerScalarRelationFilter = {
   is?: Prisma.ServerWhereInput
   isNot?: Prisma.ServerWhereInput
+}
+
+export type ServerNullableScalarRelationFilter = {
+  is?: Prisma.ServerWhereInput | null
+  isNot?: Prisma.ServerWhereInput | null
 }
 
 export type ServerCreateNestedManyWithoutWorkspaceInput = {
@@ -919,6 +1026,10 @@ export type NullableIntFieldUpdateOperationsInput = {
   divide?: number
 }
 
+export type NullableEnumServerWebStackFieldUpdateOperationsInput = {
+  set?: $Enums.ServerWebStack | null
+}
+
 export type EnumServerStatusFieldUpdateOperationsInput = {
   set?: $Enums.ServerStatus
 }
@@ -941,6 +1052,36 @@ export type ServerUpdateOneRequiredWithoutProject_linksNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ServerUpdateToOneWithWhereWithoutProject_linksInput, Prisma.ServerUpdateWithoutProject_linksInput>, Prisma.ServerUncheckedUpdateWithoutProject_linksInput>
 }
 
+export type ServerCreateNestedOneWithoutDomainsInput = {
+  create?: Prisma.XOR<Prisma.ServerCreateWithoutDomainsInput, Prisma.ServerUncheckedCreateWithoutDomainsInput>
+  connectOrCreate?: Prisma.ServerCreateOrConnectWithoutDomainsInput
+  connect?: Prisma.ServerWhereUniqueInput
+}
+
+export type ServerUpdateOneWithoutDomainsNestedInput = {
+  create?: Prisma.XOR<Prisma.ServerCreateWithoutDomainsInput, Prisma.ServerUncheckedCreateWithoutDomainsInput>
+  connectOrCreate?: Prisma.ServerCreateOrConnectWithoutDomainsInput
+  upsert?: Prisma.ServerUpsertWithoutDomainsInput
+  disconnect?: Prisma.ServerWhereInput | boolean
+  delete?: Prisma.ServerWhereInput | boolean
+  connect?: Prisma.ServerWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ServerUpdateToOneWithWhereWithoutDomainsInput, Prisma.ServerUpdateWithoutDomainsInput>, Prisma.ServerUncheckedUpdateWithoutDomainsInput>
+}
+
+export type ServerCreateNestedOneWithoutDomain_operationsInput = {
+  create?: Prisma.XOR<Prisma.ServerCreateWithoutDomain_operationsInput, Prisma.ServerUncheckedCreateWithoutDomain_operationsInput>
+  connectOrCreate?: Prisma.ServerCreateOrConnectWithoutDomain_operationsInput
+  connect?: Prisma.ServerWhereUniqueInput
+}
+
+export type ServerUpdateOneRequiredWithoutDomain_operationsNestedInput = {
+  create?: Prisma.XOR<Prisma.ServerCreateWithoutDomain_operationsInput, Prisma.ServerUncheckedCreateWithoutDomain_operationsInput>
+  connectOrCreate?: Prisma.ServerCreateOrConnectWithoutDomain_operationsInput
+  upsert?: Prisma.ServerUpsertWithoutDomain_operationsInput
+  connect?: Prisma.ServerWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ServerUpdateToOneWithWhereWithoutDomain_operationsInput, Prisma.ServerUpdateWithoutDomain_operationsInput>, Prisma.ServerUncheckedUpdateWithoutDomain_operationsInput>
+}
+
 export type ServerCreateWithoutWorkspaceInput = {
   id?: string
   provider?: string | null
@@ -958,6 +1099,10 @@ export type ServerCreateWithoutWorkspaceInput = {
   ssh_port?: number
   ssh_user?: string | null
   ssh_password_encrypted?: string | null
+  ssh_sudo_password_encrypted?: string | null
+  ssh_host_fingerprint?: string | null
+  web_stack?: $Enums.ServerWebStack | null
+  nginx_sites_path?: string | null
   status?: $Enums.ServerStatus
   renewal_at?: Date | string | null
   monthly_cost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -968,6 +1113,8 @@ export type ServerCreateWithoutWorkspaceInput = {
   updated_at?: Date | string
   deleted_at?: Date | string | null
   project_links?: Prisma.ProjectServerCreateNestedManyWithoutServerInput
+  domains?: Prisma.DomainCreateNestedManyWithoutServerInput
+  domain_operations?: Prisma.ServerDomainOperationCreateNestedManyWithoutServerInput
 }
 
 export type ServerUncheckedCreateWithoutWorkspaceInput = {
@@ -987,6 +1134,10 @@ export type ServerUncheckedCreateWithoutWorkspaceInput = {
   ssh_port?: number
   ssh_user?: string | null
   ssh_password_encrypted?: string | null
+  ssh_sudo_password_encrypted?: string | null
+  ssh_host_fingerprint?: string | null
+  web_stack?: $Enums.ServerWebStack | null
+  nginx_sites_path?: string | null
   status?: $Enums.ServerStatus
   renewal_at?: Date | string | null
   monthly_cost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -997,6 +1148,8 @@ export type ServerUncheckedCreateWithoutWorkspaceInput = {
   updated_at?: Date | string
   deleted_at?: Date | string | null
   project_links?: Prisma.ProjectServerUncheckedCreateNestedManyWithoutServerInput
+  domains?: Prisma.DomainUncheckedCreateNestedManyWithoutServerInput
+  domain_operations?: Prisma.ServerDomainOperationUncheckedCreateNestedManyWithoutServerInput
 }
 
 export type ServerCreateOrConnectWithoutWorkspaceInput = {
@@ -1046,6 +1199,10 @@ export type ServerScalarWhereInput = {
   ssh_port?: Prisma.IntFilter<"Server"> | number
   ssh_user?: Prisma.StringNullableFilter<"Server"> | string | null
   ssh_password_encrypted?: Prisma.StringNullableFilter<"Server"> | string | null
+  ssh_sudo_password_encrypted?: Prisma.StringNullableFilter<"Server"> | string | null
+  ssh_host_fingerprint?: Prisma.StringNullableFilter<"Server"> | string | null
+  web_stack?: Prisma.EnumServerWebStackNullableFilter<"Server"> | $Enums.ServerWebStack | null
+  nginx_sites_path?: Prisma.StringNullableFilter<"Server"> | string | null
   status?: Prisma.EnumServerStatusFilter<"Server"> | $Enums.ServerStatus
   renewal_at?: Prisma.DateTimeNullableFilter<"Server"> | Date | string | null
   monthly_cost?: Prisma.DecimalNullableFilter<"Server"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1074,6 +1231,10 @@ export type ServerCreateWithoutProject_linksInput = {
   ssh_port?: number
   ssh_user?: string | null
   ssh_password_encrypted?: string | null
+  ssh_sudo_password_encrypted?: string | null
+  ssh_host_fingerprint?: string | null
+  web_stack?: $Enums.ServerWebStack | null
+  nginx_sites_path?: string | null
   status?: $Enums.ServerStatus
   renewal_at?: Date | string | null
   monthly_cost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1084,6 +1245,8 @@ export type ServerCreateWithoutProject_linksInput = {
   updated_at?: Date | string
   deleted_at?: Date | string | null
   workspace: Prisma.WorkspaceCreateNestedOneWithoutServersInput
+  domains?: Prisma.DomainCreateNestedManyWithoutServerInput
+  domain_operations?: Prisma.ServerDomainOperationCreateNestedManyWithoutServerInput
 }
 
 export type ServerUncheckedCreateWithoutProject_linksInput = {
@@ -1104,6 +1267,10 @@ export type ServerUncheckedCreateWithoutProject_linksInput = {
   ssh_port?: number
   ssh_user?: string | null
   ssh_password_encrypted?: string | null
+  ssh_sudo_password_encrypted?: string | null
+  ssh_host_fingerprint?: string | null
+  web_stack?: $Enums.ServerWebStack | null
+  nginx_sites_path?: string | null
   status?: $Enums.ServerStatus
   renewal_at?: Date | string | null
   monthly_cost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1113,6 +1280,8 @@ export type ServerUncheckedCreateWithoutProject_linksInput = {
   created_at?: Date | string
   updated_at?: Date | string
   deleted_at?: Date | string | null
+  domains?: Prisma.DomainUncheckedCreateNestedManyWithoutServerInput
+  domain_operations?: Prisma.ServerDomainOperationUncheckedCreateNestedManyWithoutServerInput
 }
 
 export type ServerCreateOrConnectWithoutProject_linksInput = {
@@ -1148,6 +1317,10 @@ export type ServerUpdateWithoutProject_linksInput = {
   ssh_port?: Prisma.IntFieldUpdateOperationsInput | number
   ssh_user?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ssh_password_encrypted?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ssh_sudo_password_encrypted?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ssh_host_fingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  web_stack?: Prisma.NullableEnumServerWebStackFieldUpdateOperationsInput | $Enums.ServerWebStack | null
+  nginx_sites_path?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumServerStatusFieldUpdateOperationsInput | $Enums.ServerStatus
   renewal_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   monthly_cost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1158,6 +1331,8 @@ export type ServerUpdateWithoutProject_linksInput = {
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutServersNestedInput
+  domains?: Prisma.DomainUpdateManyWithoutServerNestedInput
+  domain_operations?: Prisma.ServerDomainOperationUpdateManyWithoutServerNestedInput
 }
 
 export type ServerUncheckedUpdateWithoutProject_linksInput = {
@@ -1178,6 +1353,10 @@ export type ServerUncheckedUpdateWithoutProject_linksInput = {
   ssh_port?: Prisma.IntFieldUpdateOperationsInput | number
   ssh_user?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ssh_password_encrypted?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ssh_sudo_password_encrypted?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ssh_host_fingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  web_stack?: Prisma.NullableEnumServerWebStackFieldUpdateOperationsInput | $Enums.ServerWebStack | null
+  nginx_sites_path?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumServerStatusFieldUpdateOperationsInput | $Enums.ServerStatus
   renewal_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   monthly_cost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1187,6 +1366,320 @@ export type ServerUncheckedUpdateWithoutProject_linksInput = {
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  domains?: Prisma.DomainUncheckedUpdateManyWithoutServerNestedInput
+  domain_operations?: Prisma.ServerDomainOperationUncheckedUpdateManyWithoutServerNestedInput
+}
+
+export type ServerCreateWithoutDomainsInput = {
+  id?: string
+  provider?: string | null
+  external_ref?: string | null
+  name: string
+  type?: $Enums.ServerType
+  hostname?: string | null
+  primary_ip?: string | null
+  region?: string | null
+  operating_system?: string | null
+  cpu_cores?: number | null
+  ram_mb?: number | null
+  disk_gb?: number | null
+  management_url?: string | null
+  ssh_port?: number
+  ssh_user?: string | null
+  ssh_password_encrypted?: string | null
+  ssh_sudo_password_encrypted?: string | null
+  ssh_host_fingerprint?: string | null
+  web_stack?: $Enums.ServerWebStack | null
+  nginx_sites_path?: string | null
+  status?: $Enums.ServerStatus
+  renewal_at?: Date | string | null
+  monthly_cost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  cost_period?: $Enums.CostPeriod
+  currency?: string
+  manual_fx_rate?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  created_at?: Date | string
+  updated_at?: Date | string
+  deleted_at?: Date | string | null
+  workspace: Prisma.WorkspaceCreateNestedOneWithoutServersInput
+  project_links?: Prisma.ProjectServerCreateNestedManyWithoutServerInput
+  domain_operations?: Prisma.ServerDomainOperationCreateNestedManyWithoutServerInput
+}
+
+export type ServerUncheckedCreateWithoutDomainsInput = {
+  id?: string
+  workspace_id: string
+  provider?: string | null
+  external_ref?: string | null
+  name: string
+  type?: $Enums.ServerType
+  hostname?: string | null
+  primary_ip?: string | null
+  region?: string | null
+  operating_system?: string | null
+  cpu_cores?: number | null
+  ram_mb?: number | null
+  disk_gb?: number | null
+  management_url?: string | null
+  ssh_port?: number
+  ssh_user?: string | null
+  ssh_password_encrypted?: string | null
+  ssh_sudo_password_encrypted?: string | null
+  ssh_host_fingerprint?: string | null
+  web_stack?: $Enums.ServerWebStack | null
+  nginx_sites_path?: string | null
+  status?: $Enums.ServerStatus
+  renewal_at?: Date | string | null
+  monthly_cost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  cost_period?: $Enums.CostPeriod
+  currency?: string
+  manual_fx_rate?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  created_at?: Date | string
+  updated_at?: Date | string
+  deleted_at?: Date | string | null
+  project_links?: Prisma.ProjectServerUncheckedCreateNestedManyWithoutServerInput
+  domain_operations?: Prisma.ServerDomainOperationUncheckedCreateNestedManyWithoutServerInput
+}
+
+export type ServerCreateOrConnectWithoutDomainsInput = {
+  where: Prisma.ServerWhereUniqueInput
+  create: Prisma.XOR<Prisma.ServerCreateWithoutDomainsInput, Prisma.ServerUncheckedCreateWithoutDomainsInput>
+}
+
+export type ServerUpsertWithoutDomainsInput = {
+  update: Prisma.XOR<Prisma.ServerUpdateWithoutDomainsInput, Prisma.ServerUncheckedUpdateWithoutDomainsInput>
+  create: Prisma.XOR<Prisma.ServerCreateWithoutDomainsInput, Prisma.ServerUncheckedCreateWithoutDomainsInput>
+  where?: Prisma.ServerWhereInput
+}
+
+export type ServerUpdateToOneWithWhereWithoutDomainsInput = {
+  where?: Prisma.ServerWhereInput
+  data: Prisma.XOR<Prisma.ServerUpdateWithoutDomainsInput, Prisma.ServerUncheckedUpdateWithoutDomainsInput>
+}
+
+export type ServerUpdateWithoutDomainsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  external_ref?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumServerTypeFieldUpdateOperationsInput | $Enums.ServerType
+  hostname?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  primary_ip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  operating_system?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cpu_cores?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  ram_mb?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  disk_gb?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  management_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ssh_port?: Prisma.IntFieldUpdateOperationsInput | number
+  ssh_user?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ssh_password_encrypted?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ssh_sudo_password_encrypted?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ssh_host_fingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  web_stack?: Prisma.NullableEnumServerWebStackFieldUpdateOperationsInput | $Enums.ServerWebStack | null
+  nginx_sites_path?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumServerStatusFieldUpdateOperationsInput | $Enums.ServerStatus
+  renewal_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  monthly_cost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  cost_period?: Prisma.EnumCostPeriodFieldUpdateOperationsInput | $Enums.CostPeriod
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  manual_fx_rate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutServersNestedInput
+  project_links?: Prisma.ProjectServerUpdateManyWithoutServerNestedInput
+  domain_operations?: Prisma.ServerDomainOperationUpdateManyWithoutServerNestedInput
+}
+
+export type ServerUncheckedUpdateWithoutDomainsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  workspace_id?: Prisma.StringFieldUpdateOperationsInput | string
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  external_ref?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumServerTypeFieldUpdateOperationsInput | $Enums.ServerType
+  hostname?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  primary_ip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  operating_system?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cpu_cores?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  ram_mb?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  disk_gb?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  management_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ssh_port?: Prisma.IntFieldUpdateOperationsInput | number
+  ssh_user?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ssh_password_encrypted?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ssh_sudo_password_encrypted?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ssh_host_fingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  web_stack?: Prisma.NullableEnumServerWebStackFieldUpdateOperationsInput | $Enums.ServerWebStack | null
+  nginx_sites_path?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumServerStatusFieldUpdateOperationsInput | $Enums.ServerStatus
+  renewal_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  monthly_cost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  cost_period?: Prisma.EnumCostPeriodFieldUpdateOperationsInput | $Enums.CostPeriod
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  manual_fx_rate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  project_links?: Prisma.ProjectServerUncheckedUpdateManyWithoutServerNestedInput
+  domain_operations?: Prisma.ServerDomainOperationUncheckedUpdateManyWithoutServerNestedInput
+}
+
+export type ServerCreateWithoutDomain_operationsInput = {
+  id?: string
+  provider?: string | null
+  external_ref?: string | null
+  name: string
+  type?: $Enums.ServerType
+  hostname?: string | null
+  primary_ip?: string | null
+  region?: string | null
+  operating_system?: string | null
+  cpu_cores?: number | null
+  ram_mb?: number | null
+  disk_gb?: number | null
+  management_url?: string | null
+  ssh_port?: number
+  ssh_user?: string | null
+  ssh_password_encrypted?: string | null
+  ssh_sudo_password_encrypted?: string | null
+  ssh_host_fingerprint?: string | null
+  web_stack?: $Enums.ServerWebStack | null
+  nginx_sites_path?: string | null
+  status?: $Enums.ServerStatus
+  renewal_at?: Date | string | null
+  monthly_cost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  cost_period?: $Enums.CostPeriod
+  currency?: string
+  manual_fx_rate?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  created_at?: Date | string
+  updated_at?: Date | string
+  deleted_at?: Date | string | null
+  workspace: Prisma.WorkspaceCreateNestedOneWithoutServersInput
+  project_links?: Prisma.ProjectServerCreateNestedManyWithoutServerInput
+  domains?: Prisma.DomainCreateNestedManyWithoutServerInput
+}
+
+export type ServerUncheckedCreateWithoutDomain_operationsInput = {
+  id?: string
+  workspace_id: string
+  provider?: string | null
+  external_ref?: string | null
+  name: string
+  type?: $Enums.ServerType
+  hostname?: string | null
+  primary_ip?: string | null
+  region?: string | null
+  operating_system?: string | null
+  cpu_cores?: number | null
+  ram_mb?: number | null
+  disk_gb?: number | null
+  management_url?: string | null
+  ssh_port?: number
+  ssh_user?: string | null
+  ssh_password_encrypted?: string | null
+  ssh_sudo_password_encrypted?: string | null
+  ssh_host_fingerprint?: string | null
+  web_stack?: $Enums.ServerWebStack | null
+  nginx_sites_path?: string | null
+  status?: $Enums.ServerStatus
+  renewal_at?: Date | string | null
+  monthly_cost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  cost_period?: $Enums.CostPeriod
+  currency?: string
+  manual_fx_rate?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  created_at?: Date | string
+  updated_at?: Date | string
+  deleted_at?: Date | string | null
+  project_links?: Prisma.ProjectServerUncheckedCreateNestedManyWithoutServerInput
+  domains?: Prisma.DomainUncheckedCreateNestedManyWithoutServerInput
+}
+
+export type ServerCreateOrConnectWithoutDomain_operationsInput = {
+  where: Prisma.ServerWhereUniqueInput
+  create: Prisma.XOR<Prisma.ServerCreateWithoutDomain_operationsInput, Prisma.ServerUncheckedCreateWithoutDomain_operationsInput>
+}
+
+export type ServerUpsertWithoutDomain_operationsInput = {
+  update: Prisma.XOR<Prisma.ServerUpdateWithoutDomain_operationsInput, Prisma.ServerUncheckedUpdateWithoutDomain_operationsInput>
+  create: Prisma.XOR<Prisma.ServerCreateWithoutDomain_operationsInput, Prisma.ServerUncheckedCreateWithoutDomain_operationsInput>
+  where?: Prisma.ServerWhereInput
+}
+
+export type ServerUpdateToOneWithWhereWithoutDomain_operationsInput = {
+  where?: Prisma.ServerWhereInput
+  data: Prisma.XOR<Prisma.ServerUpdateWithoutDomain_operationsInput, Prisma.ServerUncheckedUpdateWithoutDomain_operationsInput>
+}
+
+export type ServerUpdateWithoutDomain_operationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  external_ref?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumServerTypeFieldUpdateOperationsInput | $Enums.ServerType
+  hostname?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  primary_ip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  operating_system?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cpu_cores?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  ram_mb?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  disk_gb?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  management_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ssh_port?: Prisma.IntFieldUpdateOperationsInput | number
+  ssh_user?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ssh_password_encrypted?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ssh_sudo_password_encrypted?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ssh_host_fingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  web_stack?: Prisma.NullableEnumServerWebStackFieldUpdateOperationsInput | $Enums.ServerWebStack | null
+  nginx_sites_path?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumServerStatusFieldUpdateOperationsInput | $Enums.ServerStatus
+  renewal_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  monthly_cost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  cost_period?: Prisma.EnumCostPeriodFieldUpdateOperationsInput | $Enums.CostPeriod
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  manual_fx_rate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutServersNestedInput
+  project_links?: Prisma.ProjectServerUpdateManyWithoutServerNestedInput
+  domains?: Prisma.DomainUpdateManyWithoutServerNestedInput
+}
+
+export type ServerUncheckedUpdateWithoutDomain_operationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  workspace_id?: Prisma.StringFieldUpdateOperationsInput | string
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  external_ref?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumServerTypeFieldUpdateOperationsInput | $Enums.ServerType
+  hostname?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  primary_ip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  operating_system?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cpu_cores?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  ram_mb?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  disk_gb?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  management_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ssh_port?: Prisma.IntFieldUpdateOperationsInput | number
+  ssh_user?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ssh_password_encrypted?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ssh_sudo_password_encrypted?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ssh_host_fingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  web_stack?: Prisma.NullableEnumServerWebStackFieldUpdateOperationsInput | $Enums.ServerWebStack | null
+  nginx_sites_path?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumServerStatusFieldUpdateOperationsInput | $Enums.ServerStatus
+  renewal_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  monthly_cost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  cost_period?: Prisma.EnumCostPeriodFieldUpdateOperationsInput | $Enums.CostPeriod
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  manual_fx_rate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  project_links?: Prisma.ProjectServerUncheckedUpdateManyWithoutServerNestedInput
+  domains?: Prisma.DomainUncheckedUpdateManyWithoutServerNestedInput
 }
 
 export type ServerCreateManyWorkspaceInput = {
@@ -1206,6 +1699,10 @@ export type ServerCreateManyWorkspaceInput = {
   ssh_port?: number
   ssh_user?: string | null
   ssh_password_encrypted?: string | null
+  ssh_sudo_password_encrypted?: string | null
+  ssh_host_fingerprint?: string | null
+  web_stack?: $Enums.ServerWebStack | null
+  nginx_sites_path?: string | null
   status?: $Enums.ServerStatus
   renewal_at?: Date | string | null
   monthly_cost?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1234,6 +1731,10 @@ export type ServerUpdateWithoutWorkspaceInput = {
   ssh_port?: Prisma.IntFieldUpdateOperationsInput | number
   ssh_user?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ssh_password_encrypted?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ssh_sudo_password_encrypted?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ssh_host_fingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  web_stack?: Prisma.NullableEnumServerWebStackFieldUpdateOperationsInput | $Enums.ServerWebStack | null
+  nginx_sites_path?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumServerStatusFieldUpdateOperationsInput | $Enums.ServerStatus
   renewal_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   monthly_cost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1244,6 +1745,8 @@ export type ServerUpdateWithoutWorkspaceInput = {
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   project_links?: Prisma.ProjectServerUpdateManyWithoutServerNestedInput
+  domains?: Prisma.DomainUpdateManyWithoutServerNestedInput
+  domain_operations?: Prisma.ServerDomainOperationUpdateManyWithoutServerNestedInput
 }
 
 export type ServerUncheckedUpdateWithoutWorkspaceInput = {
@@ -1263,6 +1766,10 @@ export type ServerUncheckedUpdateWithoutWorkspaceInput = {
   ssh_port?: Prisma.IntFieldUpdateOperationsInput | number
   ssh_user?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ssh_password_encrypted?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ssh_sudo_password_encrypted?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ssh_host_fingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  web_stack?: Prisma.NullableEnumServerWebStackFieldUpdateOperationsInput | $Enums.ServerWebStack | null
+  nginx_sites_path?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumServerStatusFieldUpdateOperationsInput | $Enums.ServerStatus
   renewal_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   monthly_cost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1273,6 +1780,8 @@ export type ServerUncheckedUpdateWithoutWorkspaceInput = {
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   project_links?: Prisma.ProjectServerUncheckedUpdateManyWithoutServerNestedInput
+  domains?: Prisma.DomainUncheckedUpdateManyWithoutServerNestedInput
+  domain_operations?: Prisma.ServerDomainOperationUncheckedUpdateManyWithoutServerNestedInput
 }
 
 export type ServerUncheckedUpdateManyWithoutWorkspaceInput = {
@@ -1292,6 +1801,10 @@ export type ServerUncheckedUpdateManyWithoutWorkspaceInput = {
   ssh_port?: Prisma.IntFieldUpdateOperationsInput | number
   ssh_user?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   ssh_password_encrypted?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ssh_sudo_password_encrypted?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ssh_host_fingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  web_stack?: Prisma.NullableEnumServerWebStackFieldUpdateOperationsInput | $Enums.ServerWebStack | null
+  nginx_sites_path?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumServerStatusFieldUpdateOperationsInput | $Enums.ServerStatus
   renewal_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   monthly_cost?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1310,10 +1823,14 @@ export type ServerUncheckedUpdateManyWithoutWorkspaceInput = {
 
 export type ServerCountOutputType = {
   project_links: number
+  domains: number
+  domain_operations: number
 }
 
 export type ServerCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   project_links?: boolean | ServerCountOutputTypeCountProject_linksArgs
+  domains?: boolean | ServerCountOutputTypeCountDomainsArgs
+  domain_operations?: boolean | ServerCountOutputTypeCountDomain_operationsArgs
 }
 
 /**
@@ -1331,6 +1848,20 @@ export type ServerCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Exten
  */
 export type ServerCountOutputTypeCountProject_linksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.ProjectServerWhereInput
+}
+
+/**
+ * ServerCountOutputType without action
+ */
+export type ServerCountOutputTypeCountDomainsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.DomainWhereInput
+}
+
+/**
+ * ServerCountOutputType without action
+ */
+export type ServerCountOutputTypeCountDomain_operationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ServerDomainOperationWhereInput
 }
 
 
@@ -1352,6 +1883,10 @@ export type ServerSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   ssh_port?: boolean
   ssh_user?: boolean
   ssh_password_encrypted?: boolean
+  ssh_sudo_password_encrypted?: boolean
+  ssh_host_fingerprint?: boolean
+  web_stack?: boolean
+  nginx_sites_path?: boolean
   status?: boolean
   renewal_at?: boolean
   monthly_cost?: boolean
@@ -1363,6 +1898,8 @@ export type ServerSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   deleted_at?: boolean
   workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>
   project_links?: boolean | Prisma.Server$project_linksArgs<ExtArgs>
+  domains?: boolean | Prisma.Server$domainsArgs<ExtArgs>
+  domain_operations?: boolean | Prisma.Server$domain_operationsArgs<ExtArgs>
   _count?: boolean | Prisma.ServerCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["server"]>
 
@@ -1384,6 +1921,10 @@ export type ServerSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extens
   ssh_port?: boolean
   ssh_user?: boolean
   ssh_password_encrypted?: boolean
+  ssh_sudo_password_encrypted?: boolean
+  ssh_host_fingerprint?: boolean
+  web_stack?: boolean
+  nginx_sites_path?: boolean
   status?: boolean
   renewal_at?: boolean
   monthly_cost?: boolean
@@ -1414,6 +1955,10 @@ export type ServerSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
   ssh_port?: boolean
   ssh_user?: boolean
   ssh_password_encrypted?: boolean
+  ssh_sudo_password_encrypted?: boolean
+  ssh_host_fingerprint?: boolean
+  web_stack?: boolean
+  nginx_sites_path?: boolean
   status?: boolean
   renewal_at?: boolean
   monthly_cost?: boolean
@@ -1444,6 +1989,10 @@ export type ServerSelectScalar = {
   ssh_port?: boolean
   ssh_user?: boolean
   ssh_password_encrypted?: boolean
+  ssh_sudo_password_encrypted?: boolean
+  ssh_host_fingerprint?: boolean
+  web_stack?: boolean
+  nginx_sites_path?: boolean
   status?: boolean
   renewal_at?: boolean
   monthly_cost?: boolean
@@ -1455,10 +2004,12 @@ export type ServerSelectScalar = {
   deleted_at?: boolean
 }
 
-export type ServerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "workspace_id" | "provider" | "external_ref" | "name" | "type" | "hostname" | "primary_ip" | "region" | "operating_system" | "cpu_cores" | "ram_mb" | "disk_gb" | "management_url" | "ssh_port" | "ssh_user" | "ssh_password_encrypted" | "status" | "renewal_at" | "monthly_cost" | "cost_period" | "currency" | "manual_fx_rate" | "created_at" | "updated_at" | "deleted_at", ExtArgs["result"]["server"]>
+export type ServerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "workspace_id" | "provider" | "external_ref" | "name" | "type" | "hostname" | "primary_ip" | "region" | "operating_system" | "cpu_cores" | "ram_mb" | "disk_gb" | "management_url" | "ssh_port" | "ssh_user" | "ssh_password_encrypted" | "ssh_sudo_password_encrypted" | "ssh_host_fingerprint" | "web_stack" | "nginx_sites_path" | "status" | "renewal_at" | "monthly_cost" | "cost_period" | "currency" | "manual_fx_rate" | "created_at" | "updated_at" | "deleted_at", ExtArgs["result"]["server"]>
 export type ServerInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>
   project_links?: boolean | Prisma.Server$project_linksArgs<ExtArgs>
+  domains?: boolean | Prisma.Server$domainsArgs<ExtArgs>
+  domain_operations?: boolean | Prisma.Server$domain_operationsArgs<ExtArgs>
   _count?: boolean | Prisma.ServerCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ServerIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1473,6 +2024,8 @@ export type $ServerPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
   objects: {
     workspace: Prisma.$WorkspacePayload<ExtArgs>
     project_links: Prisma.$ProjectServerPayload<ExtArgs>[]
+    domains: Prisma.$DomainPayload<ExtArgs>[]
+    domain_operations: Prisma.$ServerDomainOperationPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1492,6 +2045,22 @@ export type $ServerPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     ssh_port: number
     ssh_user: string | null
     ssh_password_encrypted: string | null
+    /**
+     * sudo parolası SSH parolasından farklıysa; boşsa SSH parolası denenir.
+     */
+    ssh_sudo_password_encrypted: string | null
+    /**
+     * İlk başarılı bağlantıda kaydedilen host anahtarı parmak izi (TOFU).
+     */
+    ssh_host_fingerprint: string | null
+    /**
+     * Domain otomasyonunun hedeflediği web sunucu yığını.
+     */
+    web_stack: $Enums.ServerWebStack | null
+    /**
+     * Nginx vhost dizini; boşsa /etc/nginx/sites-available varsayılır.
+     */
+    nginx_sites_path: string | null
     status: $Enums.ServerStatus
     renewal_at: Date | null
     monthly_cost: runtime.Decimal | null
@@ -1900,6 +2469,8 @@ export interface Prisma__ServerClient<T, Null = never, ExtArgs extends runtime.T
   readonly [Symbol.toStringTag]: "PrismaPromise"
   workspace<T extends Prisma.WorkspaceDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.WorkspaceDefaultArgs<ExtArgs>>): Prisma.Prisma__WorkspaceClient<runtime.Types.Result.GetResult<Prisma.$WorkspacePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   project_links<T extends Prisma.Server$project_linksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Server$project_linksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProjectServerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  domains<T extends Prisma.Server$domainsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Server$domainsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DomainPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  domain_operations<T extends Prisma.Server$domain_operationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Server$domain_operationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ServerDomainOperationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1946,6 +2517,10 @@ export interface ServerFieldRefs {
   readonly ssh_port: Prisma.FieldRef<"Server", 'Int'>
   readonly ssh_user: Prisma.FieldRef<"Server", 'String'>
   readonly ssh_password_encrypted: Prisma.FieldRef<"Server", 'String'>
+  readonly ssh_sudo_password_encrypted: Prisma.FieldRef<"Server", 'String'>
+  readonly ssh_host_fingerprint: Prisma.FieldRef<"Server", 'String'>
+  readonly web_stack: Prisma.FieldRef<"Server", 'ServerWebStack'>
+  readonly nginx_sites_path: Prisma.FieldRef<"Server", 'String'>
   readonly status: Prisma.FieldRef<"Server", 'ServerStatus'>
   readonly renewal_at: Prisma.FieldRef<"Server", 'DateTime'>
   readonly monthly_cost: Prisma.FieldRef<"Server", 'Decimal'>
@@ -2377,6 +2952,54 @@ export type Server$project_linksArgs<ExtArgs extends runtime.Types.Extensions.In
   take?: number
   skip?: number
   distinct?: Prisma.ProjectServerScalarFieldEnum | Prisma.ProjectServerScalarFieldEnum[]
+}
+
+/**
+ * Server.domains
+ */
+export type Server$domainsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Domain
+   */
+  select?: Prisma.DomainSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Domain
+   */
+  omit?: Prisma.DomainOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DomainInclude<ExtArgs> | null
+  where?: Prisma.DomainWhereInput
+  orderBy?: Prisma.DomainOrderByWithRelationInput | Prisma.DomainOrderByWithRelationInput[]
+  cursor?: Prisma.DomainWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.DomainScalarFieldEnum | Prisma.DomainScalarFieldEnum[]
+}
+
+/**
+ * Server.domain_operations
+ */
+export type Server$domain_operationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ServerDomainOperation
+   */
+  select?: Prisma.ServerDomainOperationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ServerDomainOperation
+   */
+  omit?: Prisma.ServerDomainOperationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ServerDomainOperationInclude<ExtArgs> | null
+  where?: Prisma.ServerDomainOperationWhereInput
+  orderBy?: Prisma.ServerDomainOperationOrderByWithRelationInput | Prisma.ServerDomainOperationOrderByWithRelationInput[]
+  cursor?: Prisma.ServerDomainOperationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ServerDomainOperationScalarFieldEnum | Prisma.ServerDomainOperationScalarFieldEnum[]
 }
 
 /**

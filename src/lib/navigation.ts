@@ -17,6 +17,12 @@ export const NAV_ITEMS: NavItem[] = [
   { href: "/lisanslar", label: "Lisanslar", icon: "KeyRound", requires: "licenses.view" },
   { href: "/sunucular", label: "Sunucular", icon: "Server", requires: "servers.view" },
   { href: "/domainler", label: "Domainler", icon: "Globe", requires: "domains.view" },
+  {
+    href: "/sunucu-domain",
+    label: "Sunucu Domain Kontrolü",
+    icon: "ServerCog",
+    requires: "server_domains.view",
+  },
   { href: "/finans", label: "Finans", icon: "Wallet", requires: "finance.view" },
   {
     href: "/ekip",

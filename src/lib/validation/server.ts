@@ -52,6 +52,35 @@ export const serverSchema = z.object({
     .max(1000, "SSH parolası en fazla 1000 karakter olabilir.")
     .optional()
     .transform((v) => (v === "" || v === undefined ? undefined : v)),
+  /** sudo parolası SSH parolasından farklıysa; boş bırakılırsa SSH parolası denenir. */
+  ssh_sudo_password: z
+    .string()
+    .max(1000, "sudo parolası en fazla 1000 karakter olabilir.")
+    .optional()
+    .transform((v) => (v === "" || v === undefined ? undefined : v)),
+  /** Domain otomasyonunun kullanacağı web yığını. */
+  web_stack: z.preprocess(
+    // Form "" veya "none" gönderebilir; ikisi de "seçilmedi" demektir.
+    (v) => (v === "nginx" ? "nginx" : undefined),
+    z.enum(["nginx"]).optional()
+  ),
+  /** Nginx vhost dizini; boşsa /etc/nginx/sites-available varsayılır. */
+  nginx_sites_path: z
+    .string()
+    .trim()
+    .max(300)
+    .optional()
+    .transform((v, ctx) => {
+      if (!v) return undefined;
+      if (!/^\/[A-Za-z0-9._\-/]+$/.test(v) || v.split("/").includes("..")) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Geçerli bir mutlak dizin yolu girin (ör. /etc/nginx/sites-available).",
+        });
+        return z.NEVER;
+      }
+      return v.replace(/\/+$/, "");
+    }),
   status: z.enum(["active", "maintenance", "suspended", "terminated"]).default("active"),
   renewal_at: z
     .union([z.string(), z.literal("")])
