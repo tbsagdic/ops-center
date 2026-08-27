@@ -49,3 +49,52 @@ test("lisans düzenlemede tarih ve ek süre birlikteliğini doğrular", () => {
 
   assert.equal(result.success, true);
 });
+
+test("süresiz lisansı tarihsiz kabul eder", () => {
+  const result = createLicenseSchema.safeParse({
+    ...baseCreateInput,
+    unlimited: true,
+  });
+
+  assert.equal(result.success, true);
+});
+
+test("süresiz lisansta girilen tarihi reddeder", () => {
+  const result = createLicenseSchema.safeParse({
+    ...baseCreateInput,
+    unlimited: true,
+    expires_at: "2027-08-11",
+  });
+
+  assert.equal(result.success, false);
+  if (!result.success) {
+    assert.equal(
+      result.error.flatten().fieldErrors.expires_at?.[0],
+      "Süresiz lisansta tarih girilemez."
+    );
+  }
+});
+
+test("süresiz lisansta ek süreyi reddeder", () => {
+  const result = updateLicenseSchema.safeParse({
+    license_id: "00000000-0000-4000-8000-000000000002",
+    product_name: "Örnek Ürün",
+    starts_at: "",
+    expires_at: "",
+    grace_days: 14,
+    unlimited: true,
+    activation_limit: 2,
+    auto_suspend: false,
+    features: "",
+    status: "active",
+    reason: "",
+  });
+
+  assert.equal(result.success, false);
+  if (!result.success) {
+    assert.equal(
+      result.error.flatten().fieldErrors.grace_days?.[0],
+      "Süresiz lisansta ek süre girilemez."
+    );
+  }
+});

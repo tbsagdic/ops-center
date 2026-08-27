@@ -141,7 +141,15 @@ export function LicensesView({
                   <TableCell className="text-sm tabular-nums">
                     {l.active_activations} / {l.activation_limit}
                   </TableCell>
-                  <TableCell className="text-sm">{formatDate(l.expires_at)}</TableCell>
+                  <TableCell className="text-sm">
+                    {l.expires_at ? (
+                      formatDate(l.expires_at)
+                    ) : (
+                      <span className="rounded-md bg-slate-100 px-2 py-1 text-xs font-medium text-slate-700">
+                        Süresiz
+                      </span>
+                    )}
+                  </TableCell>
                   <TableCell><StatusBadge status={l.status} /></TableCell>
                   <TableCell>
                     {(canUpdate || canCreate || canDelete) && (
@@ -158,7 +166,7 @@ export function LicensesView({
                               Düzenle
                             </DropdownMenuItem>
                           )}
-                          {canUpdate && <ConfirmDialog
+                          {canUpdate && l.expires_at !== null && <ConfirmDialog
                             trigger={
                               <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                                 <RefreshCw className="mr-2 h-4 w-4" />

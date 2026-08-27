@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState, useTransition } from "react";
-import { AlertTriangle, Globe2, Loader2 } from "lucide-react";
+import { AlertTriangle, Globe2, Infinity as InfinityIcon, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { createLicense } from "@/actions/licenses";
@@ -37,6 +37,7 @@ export function LicenseForm({
   const [environment, setEnvironment] = useState<"production" | "staging" | "local">(
     "production"
   );
+  const [unlimited, setUnlimited] = useState(false);
   const [startsAt, setStartsAt] = useState("");
   const [expiresAt, setExpiresAt] = useState("");
   const [graceDays, setGraceDays] = useState("");
@@ -91,6 +92,24 @@ export function LicenseForm({
     }
   }
 
+  // Süresiz lisansta tarih alanları hem kapanır hem temizlenir; sunucuya boş
+  // gitmeleri "tarih girmediğim hâlde tarih atandı" karışıklığını önler.
+  function onUnlimitedChange(next: boolean) {
+    setUnlimited(next);
+    setErrors((current) => ({
+      ...current,
+      starts_at: [],
+      expires_at: [],
+      grace_days: [],
+    }));
+    if (next) {
+      setStartsAt("");
+      setExpiresAt("");
+      setGraceDays("");
+      setAutoSuspend(false);
+    }
+  }
+
   function onSubmit(event: React.FormEvent) {
     event.preventDefault();
     setErrors({});
@@ -100,11 +119,12 @@ export function LicenseForm({
         product_name: productName,
         domain,
         environment,
-        starts_at: startsAt,
-        expires_at: expiresAt,
-        grace_days: graceDays,
+        unlimited,
+        starts_at: unlimited ? "" : startsAt,
+        expires_at: unlimited ? "" : expiresAt,
+        grace_days: unlimited || !expiresAt ? 0 : graceDays,
         activation_limit: activationLimit,
-        auto_suspend: autoSuspend,
+        auto_suspend: unlimited ? false : autoSuspend,
         features,
       });
       if (res.success) {
@@ -117,6 +137,18 @@ export function LicenseForm({
       }
     });
   }
+
+  const activationLimitField = (
+    <Field label="Aktivasyon Limiti" error={errors.activation_limit} required>
+      <Input
+        type="number"
+        min="1"
+        value={activationLimit}
+        onChange={(event) => setActivationLimit(event.target.value)}
+        required
+      />
+    </Field>
+  );
 
   return (
     <form onSubmit={onSubmit} className="space-y-4 pt-4">
@@ -219,49 +251,65 @@ export function LicenseForm({
         />
       </Field>
 
-      <div className="grid grid-cols-2 gap-4">
-        <Field label="Başlangıç" error={errors.starts_at}>
-          <Input
-            type="date"
-            value={startsAt}
-            onChange={(event) => setStartsAt(event.target.value)}
-          />
-        </Field>
-        <Field label="Bitiş" error={errors.expires_at}>
-          <Input
-            type="date"
-            value={expiresAt}
-            onChange={(event) => onExpiresAtChange(event.target.value)}
-          />
-        </Field>
+      <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 p-3">
+        <div className="flex gap-2">
+          <InfinityIcon className="mt-0.5 h-4 w-4 shrink-0 text-[#5267ff]" />
+          <div>
+            <p className="text-sm font-semibold text-[#141821]">Süresiz Lisans</p>
+            <p className="text-xs text-muted-foreground">
+              Açıkken tarih ve ek süre alanları kapanır; lisans süre sınırı olmadan
+              geçerli olur.
+            </p>
+          </div>
+        </div>
+        <Switch checked={unlimited} onCheckedChange={onUnlimitedChange} />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <Field label="Ek Süre (gün)" error={errors.grace_days}>
-          <Input
-            type="number"
-            min="0"
-            value={expiresAt ? graceDays : ""}
-            onChange={(event) => setGraceDays(event.target.value)}
-            disabled={!expiresAt}
-            aria-describedby={!expiresAt ? "grace-days-hint" : undefined}
-          />
-          {!expiresAt && (
-            <p id="grace-days-hint" className="text-xs text-muted-foreground">
-              Ek süre girmek için önce bitiş tarihini seçin.
-            </p>
-          )}
-        </Field>
-        <Field label="Aktivasyon Limiti" error={errors.activation_limit} required>
-          <Input
-            type="number"
-            min="1"
-            value={activationLimit}
-            onChange={(event) => setActivationLimit(event.target.value)}
-            required
-          />
-        </Field>
-      </div>
+      {unlimited ? (
+        <div className="grid grid-cols-2 gap-4">{activationLimitField}</div>
+      ) : (
+        <>
+          <div className="grid grid-cols-2 gap-4">
+            <Field
+              label="Başlangıç"
+              error={errors.starts_at}
+              hint="Boş bırakılırsa lisans üretildiği an başlar."
+            >
+              <Input
+                type="date"
+                value={startsAt}
+                onChange={(event) => setStartsAt(event.target.value)}
+              />
+            </Field>
+            <Field label="Bitiş" error={errors.expires_at}>
+              <Input
+                type="date"
+                value={expiresAt}
+                onChange={(event) => onExpiresAtChange(event.target.value)}
+              />
+            </Field>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <Field label="Ek Süre (gün)" error={errors.grace_days}>
+              <Input
+                type="number"
+                min="0"
+                value={expiresAt ? graceDays : ""}
+                onChange={(event) => setGraceDays(event.target.value)}
+                disabled={!expiresAt}
+                aria-describedby={!expiresAt ? "grace-days-hint" : undefined}
+              />
+              {!expiresAt && (
+                <p id="grace-days-hint" className="text-xs text-muted-foreground">
+                  Ek süre girmek için önce bitiş tarihini seçin.
+                </p>
+              )}
+            </Field>
+            {activationLimitField}
+          </div>
+        </>
+      )}
 
       <Field
         label="Özellikler"
@@ -271,15 +319,17 @@ export function LicenseForm({
         <Input value={features} onChange={(event) => setFeatures(event.target.value)} />
       </Field>
 
-      <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 p-3">
-        <div>
-          <p className="text-sm font-semibold text-[#141821]">Otomatik Askıya Alma</p>
-          <p className="text-xs text-muted-foreground">
-            Süre ve ek süre dolduğunda lisans otomatik askıya alınır.
-          </p>
+      {!unlimited && (
+        <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 p-3">
+          <div>
+            <p className="text-sm font-semibold text-[#141821]">Otomatik Askıya Alma</p>
+            <p className="text-xs text-muted-foreground">
+              Süre ve ek süre dolduğunda lisans otomatik askıya alınır.
+            </p>
+          </div>
+          <Switch checked={autoSuspend} onCheckedChange={setAutoSuspend} />
         </div>
-        <Switch checked={autoSuspend} onCheckedChange={setAutoSuspend} />
-      </div>
+      )}
 
       <div className="flex justify-end gap-2 pt-2">
         <Button type="button" variant="outline" onClick={onCancel} disabled={isPending}>

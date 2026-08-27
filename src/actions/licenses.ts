@@ -105,8 +105,12 @@ export async function createLicense(
     }
 
     const licenseKey = generateLicenseKey();
-    const expiresAt = licenseExpiresAt(data.expires_at);
-    const graceEndsAt = addLicenseGraceDays(expiresAt, data.grace_days);
+    // Süresiz lisansta hiçbir tarih penceresi tutulmaz.
+    const startsAt = data.unlimited ? null : licenseStartsAt(data.starts_at);
+    const expiresAt = data.unlimited ? null : licenseExpiresAt(data.expires_at);
+    const graceEndsAt = data.unlimited
+      ? null
+      : addLicenseGraceDays(expiresAt, data.grace_days);
 
     const result = await prisma.$transaction(async (tx) => {
       const project = await tx.project.findFirst({
@@ -128,7 +132,7 @@ export async function createLicense(
           key_hash: hashLicenseKey(licenseKey),
           key_secret: encryptSecret(licenseKey),
           status: "active",
-          starts_at: licenseStartsAt(data.starts_at),
+          starts_at: startsAt,
           expires_at: expiresAt,
           grace_ends_at: graceEndsAt,
           activation_limit: data.activation_limit,
@@ -226,9 +230,13 @@ export async function updateLicense(input: unknown): Promise<ActionResponse<null
     if (!parsed.success) return zodFail(parsed.error);
     const data = parsed.data;
 
-    const startsAt = data.starts_at ? licenseStartsAt(data.starts_at) : null;
-    const expiresAt = licenseExpiresAt(data.expires_at);
-    const graceEndsAt = addLicenseGraceDays(expiresAt, data.grace_days);
+    // Süresiz lisansta hiçbir tarih penceresi tutulmaz.
+    const startsAt =
+      data.unlimited || !data.starts_at ? null : licenseStartsAt(data.starts_at);
+    const expiresAt = data.unlimited ? null : licenseExpiresAt(data.expires_at);
+    const graceEndsAt = data.unlimited
+      ? null
+      : addLicenseGraceDays(expiresAt, data.grace_days);
 
     const result = await prisma.$transaction(
       async (tx) => {
@@ -490,6 +498,14 @@ export async function renewLicense(
           licenseId
         );
         if (!license) return { kind: "error", message: "Lisans bulunamadı." };
+        // Süresiz lisansa yenileme uygulanırsa lisans sessizce süreli hâle gelir.
+        if (!license.expires_at) {
+          return {
+            kind: "error",
+            message:
+              "Süresiz lisans yenilenemez. Önce lisansa bitiş tarihi tanımlayın.",
+          };
+        }
 
         const recent = await tx.licenseEvent.findFirst({
           where: {
