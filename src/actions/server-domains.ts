@@ -49,6 +49,9 @@ import {
 
 const PANEL_PATH = "/sunucu-domain";
 
+/** Hata mesajı ile teknik ayrıntıyı ayıran boşluk. */
+const DETAIL_SEPARATOR = "\n\n";
+
 function handleError(error: unknown): ActionResponse<never> {
   if (error instanceof PermissionError) return fail(error.message);
   if (error instanceof ServerAccessError) return fail(error.message);
@@ -373,56 +376,66 @@ async function executeStep(args: {
 
   const finish = async (
     outcome:
-      | { ok: true; message: string; context?: Partial<OperationContext>; patch?: { backup_path?: string } }
+      | {
+          ok: true;
+          message: string;
+          context?: Partial<OperationContext>;
+          patch?: { backup_path?: string };
+          /** Adım sunucuda sürüyor; ilerleme kaydedilir ama sıraya geçilmez. */
+          pending?: boolean;
+        }
       | { ok: false; message: string; detail?: string }
   ): Promise<ActionResponse<OperationView>> => {
     const steps = parseSteps(operation.steps);
     const current = steps[stepIndex];
     const finishedAt = new Date().toISOString();
+    const isPending = outcome.ok && outcome.pending === true;
 
     if (current) {
       steps[stepIndex] = {
         ...current,
-        status: outcome.ok ? "succeeded" : "failed",
+        status: isPending ? "running" : outcome.ok ? "succeeded" : "failed",
         message: outcome.message,
-        finished_at: finishedAt,
+        ...(isPending ? {} : { finished_at: finishedAt }),
       };
     }
 
     const isLastStep = stepIndex === steps.length - 1;
+    const isComplete = outcome.ok && !isPending;
     const nextContext = outcome.ok
       ? { ...context, ...(outcome.context ?? {}) }
       : context;
 
     if (!outcome.ok) {
-      log("error", outcome.detail ? `${outcome.message}\n${outcome.detail}` : outcome.message);
+      log("error", outcome.detail ? `${outcome.message} ${outcome.detail}` : outcome.message);
     } else {
-      log("info", outcome.message);
+      log(isPending ? "info" : "info", outcome.message);
     }
 
     const updated = await db.serverDomainOperation.update({
       where: { id: operationId },
       data: {
-        status: outcome.ok ? (isLastStep ? "succeeded" : "running") : "failed",
-        // Hata durumunda adım yeniden denenebilsin diye sayaç geri alınır.
-        current_step: outcome.ok ? stepIndex + 1 : stepIndex,
+        status: outcome.ok ? (isComplete && isLastStep ? "succeeded" : "running") : "failed",
+        // Adım bitmediyse (pending) veya hata verdiyse sayaç aynı adımda kalır:
+        // bir sonraki çağrı aynı adımı sürdürür ya da yeniden dener.
+        current_step: isComplete ? stepIndex + 1 : stepIndex,
         steps: toJson(steps),
         context: toJson(nextContext),
         log: toJson(appendLog(parseLog(operation.log), collected)),
         error: outcome.ok ? null : outcome.message,
-        ...(outcome.ok && outcome.patch?.backup_path
+        ...(isComplete && outcome.patch?.backup_path
           ? { backup_path: outcome.patch.backup_path }
           : {}),
-        ...(outcome.ok && isLastStep ? { finished_at: new Date() } : {}),
+        ...(isComplete && isLastStep ? { finished_at: new Date() } : {}),
       },
       select: OPERATION_SELECT,
     });
 
     if (!outcome.ok) {
       // Güncel durum kalıcılaştı; istemci hatayı gösterip kaydı yeniden okur.
-      return fail(outcome.detail ? `${outcome.message}
-
-${outcome.detail}` : outcome.message);
+      return fail(
+        outcome.detail ? `${outcome.message}${DETAIL_SEPARATOR}${outcome.detail}` : outcome.message
+      );
     }
     return ok(toView(updated), outcome.message);
   };

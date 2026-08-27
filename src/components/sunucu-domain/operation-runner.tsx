@@ -234,7 +234,9 @@ export function OperationRunner({
               )}
               {operation.status === "failed"
                 ? `"${nextStep.label}" adımını yeniden dene`
-                : `Sırayı çalıştır: ${nextStep.label}`}
+                : nextStep.status === "running"
+                  ? `Devam et: ${nextStep.label}`
+                  : `Sırayı çalıştır: ${nextStep.label}`}
             </Button>
 
             {isPreflightDone && (

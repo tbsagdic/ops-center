@@ -129,6 +129,8 @@ export type OperationContext = {
   sslExpiresAt?: string;
   /** www alt alan adı bu sunucuya çözümleniyor mu? (sertifikaya dahil edilme koşulu) */
   wwwResolvable?: boolean;
+  /** SSL adımının kaç kez yoklandığı; sonsuz beklemeyi önler. */
+  sslPolls?: number;
   /** Kaynak vhost'tan tespit edilen site kök dizini. */
   documentRoot?: string;
   /** Kaynak vhost'tan tespit edilen ters vekil hedefi. */

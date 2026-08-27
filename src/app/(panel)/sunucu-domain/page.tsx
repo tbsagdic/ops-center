@@ -13,10 +13,13 @@ import { parseSteps } from "@/lib/server-domains/steps";
 export const metadata = { title: "Sunucu Domain Kontrolü · Operasyon Merkezi" };
 
 /**
- * Certbot adımı dakikalarca sürebilir; sayfadaki Server Action'ların süre sınırı
- * platform varsayılanı yerine buradan belirlenir.
+ * Sayfadaki Server Action'ların süre sınırı.
+ *
+ * Certbot dakikalarca sürebilir ama bu istekleri bloklamaz: SSL adımı işi sunucuda
+ * arka plana atıp yalnız kısa aralıklarla yoklar (bkz. stepBudgetMs). Bu yüzden 60
+ * saniye yeterlidir ve akış Vercel Hobby planında da çalışır.
  */
-export const maxDuration = 300;
+export const maxDuration = 60;
 
 export default async function ServerDomainPage() {
   const ctx = await getAuthContext();

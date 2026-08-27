@@ -24,11 +24,33 @@ import type { OperationContext, StepKey } from "./steps";
 
 export const DEFAULT_SITES_AVAILABLE = "/etc/nginx/sites-available";
 export const BACKUP_ROOT = "/var/backups/ops-center-domains";
+/** Arka plan işlerinin (certbot) çıktı ve durum dosyalarını tuttuğu dizin. */
+export const JOB_ROOT = "/var/lib/ops-center-domains";
 
-/** Certbot'a tanınan süre; DNS doğrulaması ve ACME turu yavaş olabilir. */
-const CERTBOT_TIMEOUT_MS = 240_000;
 /** Sunucuya yazılabilecek azami vhost boyutu. */
 const MAX_VHOST_BYTES = 512 * 1024;
+
+/**
+ * Tek bir adım çağrısının sunucuyu yoklamak için harcayabileceği süre.
+ *
+ * Sunucusuz dağıtımda fonksiyon süre sınırının altında kalmalıdır: Vercel Hobby
+ * planında sınır 60 saniyedir, bu yüzden varsayılan 40 saniyedir. Daha uzun
+ * çalıştırabilen bir ortamdaysanız SERVER_DOMAIN_STEP_BUDGET_MS ile artırın.
+ */
+export function stepBudgetMs(): number {
+  const configured = Number(process.env.SERVER_DOMAIN_STEP_BUDGET_MS);
+  if (Number.isFinite(configured) && configured >= 5_000 && configured <= 600_000) {
+    return configured;
+  }
+  return 40_000;
+}
+
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/** SSL adımının azami yoklama turu; certbot takılırsa süresiz beklenmez. */
+const MAX_SSL_POLLS = 15;
 
 export class StepError extends Error {
   constructor(
@@ -71,6 +93,11 @@ export type StepResult = {
   context?: Partial<OperationContext>;
   /** İşlem kaydına yazılacak diğer alanlar. */
   patch?: { backup_path?: string };
+  /**
+   * Adım sunucuda sürüyor, henüz bitmedi. Hata değildir: işlem "çalışıyor"
+   * durumunda kalır ve panel aynı adımı yeniden çağırarak yoklamayı sürdürür.
+   */
+  pending?: boolean;
 };
 
 // ─── Yardımcılar ─────────────────────────────────────────────────────────────
@@ -463,6 +490,16 @@ async function enable(ctx: StepRunContext): Promise<StepResult> {
   };
 }
 
+/**
+ * Certbot'u sunucuda arka plan işi olarak yürütür.
+ *
+ * ACME turu dakikalarca sürebilir; isteği açık tutmak sunucusuz dağıtımda
+ * fonksiyon süre sınırına takılır. Bunun yerine certbot `setsid` ile SSH
+ * oturumundan koparılır, çıktısı ve çıkış kodu sunucudaki bir dosyaya yazılır.
+ * Bu adım her çağrıldığında yalnız kısa bir süre yoklar; iş bitmemişse
+ * `pending` döner ve panel adımı yeniden çağırır. Böylece hiçbir istek uzamaz
+ * ve bağlantı kopsa bile certbot çalışmaya devam eder.
+ */
 async function ssl(ctx: StepRunContext): Promise<StepResult> {
   const { operation, context } = ctx;
   const certDomains = [operation.new_domain];
@@ -470,35 +507,98 @@ async function ssl(ctx: StepRunContext): Promise<StepResult> {
     certDomains.push(`www.${operation.new_domain}`);
   }
 
-  const args = [
-    "certbot",
-    "--nginx",
-    "--non-interactive",
-    "--agree-tos",
-    "--keep-until-expiring",
-    "--redirect",
-    ...certDomains.flatMap((domain) => ["-d", shellQuote(domain)]),
-  ];
-  args.push(
-    operation.ssl_email ? `-m ${shellQuote(operation.ssl_email)}` : "--register-unsafely-without-email"
-  );
+  const jobDir = `${JOB_ROOT}/${operation.id}`;
+  const exitFile = `${jobDir}/certbot.exit`;
+  const logFile = `${jobDir}/certbot.log`;
+  const startedFile = `${jobDir}/certbot.started`;
 
-  const result = await tryRun(ctx, args.join(" "), true);
-  if (result.code !== 0) {
-    const detail = `${result.stdout}\n${result.stderr}`.trim();
+  const state = await tryRun(
+    ctx,
+    `if [ -f ${shellQuote(exitFile)} ]; then printf 'DONE '; cat ${shellQuote(exitFile)}; ` +
+      `elif [ -f ${shellQuote(startedFile)} ]; then echo RUNNING; else echo NEW; fi`,
+    true
+  );
+  const status = state.stdout.trim();
+
+  if (status.startsWith("NEW")) {
+    const certbot = [
+      "certbot",
+      "--nginx",
+      "--non-interactive",
+      "--agree-tos",
+      "--keep-until-expiring",
+      "--redirect",
+      ...certDomains.flatMap((domain) => ["-d", shellQuote(domain)]),
+      operation.ssl_email
+        ? `-m ${shellQuote(operation.ssl_email)}`
+        : "--register-unsafely-without-email",
+    ].join(" ");
+
+    // setsid + stdio kapatma: SSH kanalı kapandığında süreç öldürülmez.
+    await run(
+      ctx,
+      `mkdir -p ${shellQuote(jobDir)} && chmod 700 ${shellQuote(jobDir)} && ` +
+        `touch ${shellQuote(startedFile)} && ` +
+        `setsid sh -c ${shellQuote(
+          `${certbot} > ${shellQuote(logFile)} 2>&1; echo $? > ${shellQuote(exitFile)}`
+        )} </dev/null >/dev/null 2>&1 &`,
+      { sudo: true, failMessage: "Certbot arka plan işi başlatılamadı." }
+    );
+    ctx.log("info", `Certbot arka planda başlatıldı: ${certDomains.join(", ")}`);
+  }
+
+  // Kısa bir süre bekleyip sonucu yakalamayı dene; yakalanmazsa panel tekrar yoklar.
+  const deadline = Date.now() + stepBudgetMs();
+  let exitCode: number | null = status.startsWith("DONE")
+    ? Number(status.slice(5).trim())
+    : null;
+
+  while (exitCode === null && Date.now() < deadline) {
+    await delay(5_000);
+    const poll = await tryRun(
+      ctx,
+      `if [ -f ${shellQuote(exitFile)} ]; then cat ${shellQuote(exitFile)}; fi`,
+      true
+    );
+    const value = poll.stdout.trim();
+    if (/^\d+$/.test(value)) exitCode = Number(value);
+  }
+
+  if (exitCode === null) {
+    const polls = (context.sslPolls ?? 0) + 1;
+    if (polls > MAX_SSL_POLLS) {
+      throw new StepError(
+        "Certbot beklenenden uzun sürdü ve sonuç alınamadı. Sunucuda `certbot certificates` " +
+          `çıktısını ve ${logFile} günlüğünü kontrol edin.`
+      );
+    }
+    const tail = await tryRun(ctx, `tail -n 1 ${shellQuote(logFile)} 2>/dev/null`, true);
+    const note = tail.stdout.trim();
+    return {
+      pending: true,
+      context: { sslPolls: polls },
+      message: `Certbot sunucuda çalışmayı sürdürüyor${note ? ` — ${note}` : ""}`,
+    };
+  }
+
+  const log = await tryRun(ctx, `tail -n 40 ${shellQuote(logFile)} 2>/dev/null`, true);
+  // İş bitti; sonraki denemenin yeniden başlayabilmesi için işaretçiler temizlenir.
+  await tryRun(ctx, `rm -f ${shellQuote(startedFile)} ${shellQuote(exitFile)}`, true);
+
+  if (exitCode !== 0) {
     throw new StepError(
       "Let's Encrypt sertifikası alınamadı. Alan adının bu sunucuya çözümlendiğinden ve 80/443 portlarının açık olduğundan emin olun.",
-      detail.slice(0, 4_000)
+      log.stdout.trim().slice(0, 4_000)
     );
   }
-  ctx.log("info", `Sertifika alındı: ${certDomains.join(", ")}`);
 
+  ctx.log("info", `Sertifika alındı: ${certDomains.join(", ")}`);
   await testNginx(ctx);
   await reloadNginx(ctx);
 
   return {
     message: `HTTPS etkin (${certDomains.join(", ")}).`,
-    context: { nginxReloaded: true },
+    context: { nginxReloaded: true, sslPolls: 0 },
   };
 }
 
@@ -632,11 +732,14 @@ const HANDLERS: Partial<Record<StepKey, (ctx: StepRunContext) => Promise<StepRes
   deactivate_old: deactivateOld,
 };
 
-/** Adım için gereken azami süre; UI ve serverless sınırı buna göre planlanır. */
+/**
+ * Adım için gereken azami süre.
+ * SSL adımı certbot'un bitmesini beklemez, yalnız yoklar; bu yüzden bütçeye bağlıdır.
+ */
 export function timeoutForStep(step: StepKey): number {
-  if (step === "ssl") return CERTBOT_TIMEOUT_MS;
-  if (step === "backup") return 120_000;
-  return 60_000;
+  if (step === "ssl") return stepBudgetMs() + 20_000;
+  if (step === "backup") return 60_000;
+  return 45_000;
 }
 
 /** Sunucuda çalışan adımları yürütür; `finalize` SSH gerektirmediğinden burada yer almaz. */
