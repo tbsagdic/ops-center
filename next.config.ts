@@ -60,6 +60,10 @@ const repoFullName = resolveRepoFullName();
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
+  // ssh2, isteğe bağlı bir native binding (sshcrypto.node) yükler. Bundler bu
+  // dosyayı ESM chunk'a yerleştiremediği için paket Node'un kendi require'ına
+  // bırakılır; binding yoksa ssh2 saf JS kripto uygulamasına düşer.
+  serverExternalPackages: ["ssh2"],
   env: {
     APP_VERSION: pkg.version,
     APP_COMMIT_SHA: resolveCommitSha(),
